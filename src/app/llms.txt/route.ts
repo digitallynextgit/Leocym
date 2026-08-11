@@ -1,6 +1,6 @@
 import { FAQ } from "@/content/misc";
 import { CLEANING_PRODUCTS, ODOUR_PRODUCTS } from "@/content/products";
-import { SITE } from "@/content/site";
+import { CTA, NAV, SITE } from "@/content/site";
 import { APPROVED_CLAIMS } from "@/content/claims";
 
 /**
@@ -40,7 +40,7 @@ export function GET() {
     list([
       "No laboratory-verified kill rates, percentages or timings are published.",
       "No comparison against named competitor brands.",
-      "No price or discount claims of any kind.",
+      "No price or promotional claims of any kind.",
     ]),
     "",
     `## Odour neutralisers (${ODOUR_PRODUCTS.length})`,
@@ -67,7 +67,15 @@ export function GET() {
     "",
     "## Buying",
     "",
-    "This website is information only and does not sell. Enquiries go to the address below.",
+    `This website is information only and does not sell. No price appears anywhere on it and there is no way to place an order through it. The range is sold in India by an authorised distributor, whose site is linked from ${SITE.url}/where-to-buy. Business enquiries, documentation requests and site assessments go through ${SITE.url}/contact or the address below.`,
+    "",
+    "## Pages",
+    "",
+    list([
+      `${SITE.url}/ — what the brand is and why odour is treated at its source`,
+      ...NAV.map((n) => `${SITE.url}${n.href} — ${n.blurb}`),
+      `${SITE.url}${CTA.href} — business enquiry and contact form`,
+    ]),
     "",
     `## Contact`,
     "",

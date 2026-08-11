@@ -12,8 +12,11 @@
  *   4. An invented performance number (a percentage or a "kills N%" pattern)
  *      outside the small allowlist of printed catalogue specifications
  *
- * Scope: src/content/*.ts and src/components/sections/*.tsx - i.e. the strings
- * that actually reach the public page.
+ * Scope: src/content, src/components and src/app - i.e. every string that can
+ * reach a public page. src/app was added when the site became multi-page: page
+ * files now carry real copy (page headings, standfirsts, metadata
+ * descriptions), and none of it was being checked while the guard only looked
+ * at the section components.
  */
 
 import { readFileSync, readdirSync } from "node:fs";
@@ -54,10 +57,25 @@ const COMMERCE = [
 ];
 
 /**
- * Client directive: the distributor is not named anywhere on this site.
- * Kept in the same guard as the competitor list so it cannot quietly return.
+ * The distributor's name.
+ *
+ * Marketing Strategy §6.3.3 requires a 'where to buy' section that links to the
+ * distributor's website, so the name cannot be banned outright the way it was
+ * when this site had nowhere to send buying traffic. It is confined instead:
+ * allowed in the two files below, an error everywhere else.
+ *
+ * What is still absolute, and is NOT relaxed here: no distributor logo, lockup
+ * or co-branded mark anywhere on this site. This is Leocym's own channel and it
+ * carries the Leocym logo only (Brand Guidelines Part 2) - there is no such
+ * asset in `public/` and none should be added.
  */
 const FORBIDDEN_NAMES = ["Rudione", "rudione", "RUDIONE"];
+
+/** Paths, relative to the repo root, where the distributor may be named. */
+const DISTRIBUTOR_ALLOWED = [
+  join("src", "content", "site.ts"),
+  join("src", "components", "sections", "WhereToBuy.tsx"),
+];
 
 /** Never named on the public site (Marketing Strategy §3.4). */
 const COMPETITORS = [
@@ -93,6 +111,11 @@ const ALLOWED_NUMERIC = [
 const NUMERIC_CLAIM = /\b\d{1,3}(\.\d+)?\s?%/g;
 const KILL_CLAIM = /\bkills?\s+\d/gi;
 
+/** A quoted string, and the test for "this is a CSS value, not a sentence". */
+const QUOTED = /(["'`])([^"'`\n]*)\1/g;
+const CSS_ONLY =
+  /^[\s\d.%,()+\-*/]*(?:(?:px|rem|em|vh|vw|svh|dvh|fr|ch|deg|ms|s|auto|none|calc|min|max|clamp|var|infinity)[\s\d.%,()+\-*/]*)*$/i;
+
 function walk(dir) {
   const out = [];
   for (const e of readdirSync(dir, { withFileTypes: true })) {
@@ -103,34 +126,61 @@ function walk(dir) {
   return out;
 }
 
-const files = walk(join(SRC, "content")).concat(
-  walk(join(SRC, "components", "sections")),
-);
+const files = [
+  ...walk(join(SRC, "content")),
+  ...walk(join(SRC, "components")),
+  ...walk(join(SRC, "app")),
+];
 
 const problems = [];
 const add = (file, line, rule, detail) =>
   problems.push({ file: relative(ROOT, file), line, rule, detail });
 
+/**
+ * Files that DESCRIBE the rules rather than speak to a customer. Scanning them
+ * is self-defeating: claims.ts defines the forbidden list, and /review is the
+ * internal approval sheet whose whole job is to restate the contract ("no
+ * price, no cart, no checkout") so a human can sign it off. Both are excluded
+ * for the same reason, and /review is noindex and unlinked besides.
+ */
+const DESCRIBES_THE_RULES = (rel) =>
+  rel.endsWith(join("content", "claims.ts")) ||
+  rel.startsWith(join("src", "app", "review"));
+
 for (const file of files) {
-  // claims.ts defines the forbidden list itself, so skip it
-  if (file.endsWith("claims.ts")) continue;
+  const rel = relative(ROOT, file);
+  if (DESCRIBES_THE_RULES(rel)) continue;
+
+  const mayNameDistributor = DISTRIBUTOR_ALLOWED.includes(rel);
 
   const lines = readFileSync(file, "utf8").split("\n");
   lines.forEach((raw, i) => {
     const line = raw.trim();
     const n = i + 1;
-    if (line.startsWith("*") || line.startsWith("//")) return; // comments
+    // Comments: `//`, and both the opening `/*` and the continuation `*` of a
+    // block. The opening line was missed until the guard started scanning
+    // src/app, where a file-header comment naming the distributor sailed past
+    // the `*` test because it begins with a slash.
+    if (
+      line.startsWith("*") ||
+      line.startsWith("//") ||
+      line.startsWith("/*")
+    )
+      return;
 
     // Tailwind arbitrary values are CSS, not copy. `rounded-[20%]`,
     // `max-w-[16ch]` and `w-[46px]` must not be read as numeric claims, so
     // strip every [...] before the numeric test. A real claim is never written
     // inside square brackets, so nothing is hidden by this.
-    // A quoted string that is ONLY a percentage is a CSS value - `width: "100%"`
-    // - never a performance claim. A real claim always carries words alongside
-    // the number ("kills 99% of odours"), so it survives this strip.
+    //
+    // Likewise a quoted string made only of CSS tokens - `"100%"`,
+    // `"0px 0px -12% 0px"`, `"calc(100% - 2rem)"` - is a style value, never a
+    // performance claim. Anything carrying an actual word is left alone, and a
+    // real claim always carries words beside the number ("kills 99% of
+    // odours"), so nothing that asserts anything can hide in here.
     const prose = line
       .replace(/\[[^\]]*\]/g, "")
-      .replace(/(["'`])\s*-?\d{1,3}(\.\d+)?%\s*\1/g, "");
+      .replace(QUOTED, (m, _q, inner) => (CSS_ONLY.test(inner) ? "" : m));
 
     const lower = line.toLowerCase();
     for (const term of FORBIDDEN)
@@ -139,8 +189,10 @@ for (const file of files) {
       if (re.test(line)) add(file, n, "commerce-primitive", String(re));
     for (const c of COMPETITORS)
       if (line.includes(c)) add(file, n, "named-competitor", c);
-    for (const c of FORBIDDEN_NAMES)
-      if (line.includes(c)) add(file, n, "distributor-named", c);
+    if (!mayNameDistributor) {
+      for (const c of FORBIDDEN_NAMES)
+        if (line.includes(c)) add(file, n, "distributor-named", c);
+    }
 
     for (const m of prose.match(NUMERIC_CLAIM) ?? []) {
       if (!ALLOWED_NUMERIC.some((re) => re.test(prose)))
@@ -166,5 +218,6 @@ if (problems.length) {
 
 console.log(
   `✓ Claims guard passed - ${files.length} files checked, no forbidden language, ` +
-    "no commerce primitives, no named competitors, no distributor name, no unapproved numbers.",
+    "no commerce primitives, no named competitors, no unapproved numbers, and the\n" +
+    `  distributor named only in ${DISTRIBUTOR_ALLOWED.join(" and ")}.`,
 );

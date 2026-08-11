@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Lora, Montserrat, Open_Sans, Italianno } from "next/font/google";
 import { SITE } from "@/content/site";
+import { Header } from "@/components/sections/Header";
+import { Footer } from "@/components/sections/Footer";
 import "./globals.css";
 
 /* Brand-mandated faces (Rudione Brand Guidelines, Part 5).
@@ -70,13 +72,33 @@ export const metadata: Metadata = {
     : { index: false, follow: false },
 };
 
+/**
+ * The shell every page shares: skip link, header, main, footer.
+ *
+ * These used to live inside page.tsx when the site was a single page. Hoisting
+ * them here is what makes the header's sticky position and its open mobile
+ * panel survive a client-side navigation instead of being torn down and rebuilt
+ * on every page change.
+ */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-IN"
       className={`${lora.variable} ${montserrat.variable} ${openSans.variable} ${italianno.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <a
+          href="#content"
+          className="ui-text bg-ink text-paper sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-70 focus:px-5 focus:py-3"
+        >
+          Skip to content
+        </a>
+        <Header />
+        <main id="content" className="flex flex-col">
+          {children}
+        </main>
+        <Footer />
+      </body>
     </html>
   );
 }

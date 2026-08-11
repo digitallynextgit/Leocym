@@ -1,0 +1,11 @@
+PART C - LEOCYM WEBSITE (information only, no cart)               [6.3]
+────────────────────────────────────────────────────────────────
+├── HOME  (Leocym logo only)
+├── BRAND STORY - French origin, time-tested Europe-trusted technology
+├── PRODUCT CATALOGUE  (information only, no buy option)
+├── FOR BUSINESS  (industrial & large-scale content, pages 35–40)   [6.5]
+├── CERTIFICATIONS & SAFETY INFORMATION
+├── WHERE TO BUY  → links to the Rudione website (never to Amazon)  [6.3.3]
+└── BUSINESS ENQUIRY & CONTACT FORM
+
+

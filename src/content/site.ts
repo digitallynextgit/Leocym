@@ -5,12 +5,8 @@
  *   - This is Leocym's OWN channel, so it carries the LEOCYM LOGO ONLY.
  *   - This site is INFORMATION ONLY. It never sells. There is deliberately no
  *     price, cart or checkout primitive anywhere in the type system.
- *
- * CLIENT DIRECTIVE (supersedes the strategy's §6.3 routing instruction):
- *   The distributor is not named anywhere on this site — no logo, no wordmark,
- *   no text credit. The site explains what Leocym is and how it works, and
- *   points enquiries at Leocym directly. `npm run build` fails if the name
- *   reappears anywhere in shipped content; see scripts/check-claims.mjs.
+ *   - Buying traffic leaves for the distributor's site, never for a marketplace
+ *     (Marketing Strategy §6.3.3).
  */
 
 export const SITE = {
@@ -44,17 +40,77 @@ export const SITE = {
   indexable: process.env.NEXT_PUBLIC_INDEXABLE === "true",
 } as const;
 
-export type NavItem = { label: string; href: string };
+/**
+ * WHERE TO BUY — the one outbound commercial link on the site.
+ *
+ * Marketing Strategy §6.3.3 and the sitemap: "WHERE TO BUY → links to the
+ * Rudione website (never to Amazon)". Leocym informs and sends buying traffic
+ * to the distributor's own site, so the customer relationship and the margin
+ * both stay in-house rather than going to a marketplace.
+ *
+ * This is the ONLY place the distributor is named. `scripts/check-claims.mjs`
+ * allows the name in this file and in the Where-to-buy section, and fails the
+ * build if it appears anywhere else — the distributor still gets no logo, no
+ * lockup and no credit in product or brand copy (Brand Guidelines Part 2).
+ *
+ * ⚠ CONFIRM THE URL BEFORE GO-LIVE. The marketing strategy names the site but
+ * never prints the address; `rudione.com` is the assumed domain. One string to
+ * change if it is wrong.
+ */
+export const RETAIL = {
+  name: "Rudione",
+  url: "https://rudione.com",
+  /**
+   * Two cases, because "India" is a proper noun and lowercasing the label to
+   * drop it into a sentence produced "authorised distributor for india".
+   * `role` is the standalone label; `roleInline` is the mid-sentence form.
+   */
+  role: "Authorised distributor for India",
+  roleInline: "authorised distributor for India",
+} as const;
+
+export type NavItem = {
+  label: string;
+  href: string;
+  /** One line for the footer and the mobile panel. */
+  blurb: string;
+};
 
 /**
- * Navigation follows the argument, in order: what the difference is, how it
- * works, what the science is, what the products are, where it is used.
+ * The five information pages from the sitemap, in reading order: what the brand
+ * is, what it makes, how far it scales, what it is certified and safe for, and
+ * where to get it. The enquiry form is the header CTA rather than a nav item —
+ * one call to action, as per the brand contract.
  */
 export const NAV: NavItem[] = [
-  { label: "The difference", href: "#difference" },
-  { label: "How it works", href: "#method" },
-  { label: "The science", href: "#science" },
-  { label: "Products", href: "#range" },
-  { label: "Where it's used", href: "#areas" },
-  { label: "Questions", href: "#questions" },
+  {
+    label: "Brand story",
+    href: "/brand-story",
+    blurb: "French origin, and technology Europe has trusted for years.",
+  },
+  {
+    label: "Products",
+    href: "/products",
+    blurb: "The full catalogue, as information. Nothing is sold here.",
+  },
+  {
+    label: "For business",
+    href: "/for-business",
+    blurb: "Industrial and large-scale odour control, and the six-step method.",
+  },
+  {
+    // Short in the nav; the page itself carries the full "Certifications &
+    // safety information" heading from the sitemap.
+    label: "Certifications",
+    href: "/certifications",
+    blurb: "Composition, handling, and the documentation available on request.",
+  },
+  {
+    label: "Where to buy",
+    href: "/where-to-buy",
+    blurb: "Where the range is sold in India.",
+  },
 ];
+
+/** The single call to action, used by the header, the footer and every page end. */
+export const CTA = { label: "Business enquiry", href: "/contact" } as const;

@@ -1,61 +1,62 @@
-import { Header } from "@/components/sections/Header";
 import { Hero } from "@/components/sections/Hero";
 import { Difference } from "@/components/sections/Difference";
-import { Method } from "@/components/sections/Method";
-import { Science } from "@/components/sections/Science";
-import { Range } from "@/components/sections/Range";
-import { Areas } from "@/components/sections/Areas";
-import { Industrial } from "@/components/sections/Industrial";
-import { Origin } from "@/components/sections/Origin";
-import { Questions } from "@/components/sections/Questions";
-import { Contact } from "@/components/sections/Contact";
-import { Footer } from "@/components/sections/Footer";
+import {
+  OriginPreview,
+  RangePreview,
+  ScalePreview,
+} from "@/components/sections/Previews";
+import { Closing } from "@/components/sections/Closing";
 
-import { FAQ } from "@/content/misc";
 import { PRODUCTS } from "@/content/products";
-import { SITE } from "@/content/site";
+import { NAV, SITE } from "@/content/site";
 
 /**
- * The twelve sections, ordered as an argument rather than a brochure:
- * what the difference is, how it works, why it works, what the products are,
- * where it is used, how far it scales, where it came from, what you might ask,
- * and how to reach us.
+ * THE HOMEPAGE.
  *
- *  1 Header · 2 Hero · 3 Difference · 4 Method · 5 Science · 6 Range
- *  7 Areas · 8 Industrial · 9 Origin · 10 Questions · 11 Contact · 12 Footer
+ * It used to be the whole site: twelve sections, twenty-six product plates with
+ * a filter bar and a dialog, five industrial segments with photography,
+ * twenty-seven areas of use, a six-step method, four science blocks and ten
+ * expandable questions, stacked on one scroll. Every part was good and the
+ * total was unreadable - the reader had to get through the entire catalogue to
+ * find out whether the brand was worth their attention.
+ *
+ * The sitemap already told us the shape (Marketing Strategy §6.3): five
+ * information pages, a where-to-buy, and an enquiry form. So the homepage now
+ * does the one job a homepage should - make the argument, then point.
+ *
+ *   1 Hero          the promise, one action
+ *   2 Difference    the argument the whole brand rests on, full screen
+ *   3 Range         six plates out of twenty-six          -> /products
+ *   4 Scale         five segments, one photograph          -> /for-business
+ *   5 Origin        three sentences and a map              -> /brand-story
+ *   6 Closing       the one CTA           -> /contact, /where-to-buy
+ *
+ * Nothing was deleted. Method, Science, Areas, Industrial, the full catalogue
+ * and the questions all moved to the page where a reader has a reason to want
+ * them, and every preview here reads from the same typed content, so they
+ * cannot drift apart.
  */
 export default function Page() {
   return (
     <>
       <StructuredData />
-      <a
-        href="#content"
-        className="ui-text bg-ink text-paper sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-70 focus:px-5 focus:py-3"
-      >
-        Skip to content
-      </a>
-      <Header />
-      <main id="content">
-        <Hero />
-        <Difference />
-        <Method />
-        <Science />
-        <Range />
-        <Areas />
-        <Industrial />
-        <Origin />
-        <Questions />
-        <Contact />
-      </main>
-      <Footer />
+      <Hero />
+      <Difference />
+      <RangePreview />
+      <ScalePreview />
+      <OriginPreview />
+      <Closing />
     </>
   );
 }
 
 /**
- * Machine-readable layer. The FAQPage graph is the point of this: it is how the
- * brand becomes the quotable default answer in AI search while the category is
- * still uncontested.
+ * Machine-readable layer for the homepage: who Leocym is, what the site is, and
+ * the full product list.
+ *
+ * The FAQPage graph is NOT here. It lives on /contact, alongside the questions
+ * it describes - a page that claims FAQ markup without rendering the answers is
+ * lying to the crawler, and the questions moved when the homepage was cut down.
  *
  * No `offers` or `price` on any Product node - this site does not sell, and
  * telling a crawler otherwise would be a lie.
@@ -85,14 +86,11 @@ function StructuredData() {
       name: SITE.name,
       inLanguage: "en-IN",
       publisher: { "@id": `${SITE.url}#organization` },
-    },
-    {
-      "@type": "FAQPage",
-      "@id": `${SITE.url}#faq`,
-      mainEntity: FAQ.map((item) => ({
-        "@type": "Question",
-        name: item.q,
-        acceptedAnswer: { "@type": "Answer", text: item.a },
+      hasPart: NAV.map((item) => ({
+        "@type": "WebPage",
+        "@id": `${SITE.url}${item.href}`,
+        name: item.label,
+        description: item.blurb,
       })),
     },
     {

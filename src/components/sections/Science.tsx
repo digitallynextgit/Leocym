@@ -1,55 +1,10 @@
 import { DELIVERY, INTENSITY_SCALE, SCIENCE_NOTE } from "@/content/misc";
 import { MECHANISM } from "@/content/claims";
-import { CLEANING_PRODUCTS } from "@/content/products";
-import { SITE } from "@/content/site";
-import { Petal, Reveal } from "@/components/ui";
+import { Petal, Reveal, TextLink } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 
-/** Derived from the product data, never asserted by hand. */
-const originShare = (() => {
-  const v = CLEANING_PRODUCTS.map(
-    (p) => p.specs?.find((s) => s.label === "Composition")?.value ?? "",
-  )
-    .map((s) => parseInt(s, 10))
-    .filter((n) => !Number.isNaN(n));
-  const min = Math.min(...v);
-  const max = Math.max(...v);
-  return min === max ? `${min}%` : `${min}-${max}%`;
-})();
-
-const fragranceFree = CLEANING_PRODUCTS.filter((p) =>
-  p.specs?.some((s) => s.value.toLowerCase().includes("fragrance-free")),
-).length;
-
-const HANDLING = [
-  {
-    label: "Read the label",
-    body: "Every pack carries its own directions, precautions and storage conditions. Follow the pack, not a general rule.",
-  },
-  {
-    label: "Not on food",
-    body: "Meat Odrkill and Fish Odrkill treat surfaces, equipment and surroundings. They are not to be sprayed on food products.",
-  },
-  {
-    label: "Not on people or animals",
-    body: "Where a product is applied by spraying into the air, it is used outside of human or animal presence.",
-  },
-  {
-    label: "Fragrance sensitivity",
-    body: "Some products contain fragrance and can cause cutaneous allergy. Particular attention is recommended for anyone sensitive to fragrance.",
-  },
-  {
-    label: "Keep away from children",
-    body: "Store out of reach of children, in sealed packaging, away from direct sunlight.",
-  },
-  {
-    label: "Disposal",
-    body: "Dispose of product in accordance with local, regional, national and international regulations.",
-  },
-];
-
 /**
- * Section - The science.
+ * The science, on the brand story page.
  *
  * Three ideas, in order: what the chemistry actually does, how it is delivered
  * to the source, and how odour is measured in the field.
@@ -59,6 +14,12 @@ const HANDLING = [
  * claim about Leocym, and it is worded so it cannot be read as one - the whole
  * point is that odour is measurable, so the honest test of any treatment is
  * whether the reading falls.
+ *
+ * A fourth block used to sit here covering composition, handling and safety.
+ * It now has a page of its own at /certifications, where a facility or
+ * food-safety officer can be sent directly and where it can carry the
+ * documentation list it always needed. This section links to it rather than
+ * repeating a shortened version.
  */
 export function Science() {
   return (
@@ -160,41 +121,11 @@ export function Science() {
               <p className="prose-body text-ink-deep/70 measure-text mt-6">
                 {SCIENCE_NOTE}
               </p>
-            </div>
-          </div>
-        </Reveal>
 
-        {/* ---- 04 Composition and safety ---- */}
-        <Reveal delay={200}>
-          <div className="rule-t mt-12 grid gap-x-14 gap-y-6 pt-8 lg:grid-cols-12">
-            <p className="plate-no text-flame-deep lg:col-span-2 lg:pt-2">
-              04 / Composition
-            </p>
-            <div className="lg:col-span-10">
-              <p className="prose-lead text-ink-deep/80 measure-text">
-                {originShare} of the ingredients across the cleaning range are of
-                plant and mineral origin, stated on each product.{" "}
-                {fragranceFree} of them are formulated without fragrance at all,
-                for food-industry and sensitive environments.
-              </p>
-              <dl className="mt-6 grid grid-cols-1 gap-x-10 sm:grid-cols-2">
-                {HANDLING.map((h) => (
-                  <div key={h.label} className="rule-t py-3.5">
-                    <dt className="display-3">{h.label}</dt>
-                    <dd className="prose-body text-ink-deep/70 mt-1">{h.body}</dd>
-                  </div>
-                ))}
-              </dl>
-              <p className="spec-value text-ink-soft rule-t mt-6 pt-4">
-                Safety data sheets, composition details and certification
-                documentation for any product are available on request from{" "}
-                <a
-                  href={`mailto:${SITE.contact.email}`}
-                  className="text-flame-deep hover:text-flame underline decoration-1 underline-offset-4 transition-colors duration-(--dur-quick)"
-                >
-                  {SITE.contact.email}
-                </a>
-                .
+              <p className="rule-t mt-8 pt-5">
+                <TextLink href="/certifications">
+                  Composition, safety and the documentation we can send
+                </TextLink>
               </p>
             </div>
           </div>

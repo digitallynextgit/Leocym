@@ -139,7 +139,7 @@ export const FAQ: QA[] = [
   },
   {
     q: "Can Leocym products be used at home as well as in businesses?",
-    a: "Yes. The range is designed for both. The same formulations are used in corporate offices, hotels, hospitals and food businesses, and in ordinary households. Open any product in the range above to see the environments it suits.",
+    a: "Yes. The range is designed for both. The same formulations are used in corporate offices, hotels, hospitals and food businesses, and in ordinary households. Open any product in the catalogue to see the environments it suits.",
   },
   {
     q: "Are Leocym products safe and eco-friendly?",
@@ -159,7 +159,7 @@ export const FAQ: QA[] = [
   },
   {
     q: "How do I get Leocym products or ask a question?",
-    a: "This website is for information only and does not sell. Write to info@leocym.com with the site, the smell and what has been tried so far, and the team will come back to you.",
+    a: "This website is for information only and does not sell. The range is distributed in India by our authorised distributor, and the 'where to buy' page links to their site. For a business, a large site or a documentation request, use the enquiry form or write to info@leocym.com with the site, the smell and what has been tried so far.",
   },
 ];
 

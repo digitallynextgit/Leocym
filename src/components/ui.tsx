@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 /* ============================================================================
    Shared primitives.
@@ -147,6 +148,10 @@ export function SectionHead({
  * The one button style on the site. Flame for the primary action, an outlined
  * hairline for secondary. Real hover, focus and active states - the polish gap
  * is where generated UI gives itself away.
+ *
+ * An internal href renders through next/link, so page-to-page moves prefetch on
+ * hover and transition on the client. Anything else falls back to a plain
+ * anchor - mailto:, an external site, or an in-page hash.
  */
 export function Action({
   href,
@@ -170,14 +175,187 @@ export function Action({
     inverse:
       "rule-inv-all text-paper hover:bg-paper hover:text-ink active:bg-paper/90",
   }[variant];
+  const cls = `${base} ${styles} ${className}`;
+
+  if (href.startsWith("/") && !external) {
+    return (
+      <Link href={href} className={cls}>
+        {children}
+      </Link>
+    );
+  }
   return (
     <a
       href={href}
-      className={`${base} ${styles} ${className}`}
+      className={cls}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
     >
       {children}
     </a>
+  );
+}
+
+/**
+ * A quiet text link with a moving arrow. This is how the site navigates BETWEEN
+ * pages without spending its one call-to-action budget: a link is not a CTA, and
+ * a page full of buttons is exactly the clutter this restructure removed.
+ */
+export function TextLink({
+  href,
+  children,
+  tone = "ink",
+  className = "",
+  external = false,
+}: {
+  href: string;
+  children: React.ReactNode;
+  tone?: "ink" | "paper";
+  className?: string;
+  external?: boolean;
+}) {
+  const colour =
+    tone === "ink"
+      ? "text-flame-deep hover:text-ink"
+      : "text-flame hover:text-paper";
+  const cls = `ui-text group inline-flex items-center gap-2 transition-colors duration-(--dur-quick) ${colour} ${className}`;
+  const inner = (
+    <>
+      <span className="underline decoration-1 underline-offset-4">
+        {children}
+      </span>
+      <svg
+        width="16"
+        height="10"
+        viewBox="0 0 16 10"
+        aria-hidden="true"
+        className="shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:translate-x-1"
+      >
+        <path
+          d="M0 5h14M10 1l4 4-4 4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+
+  if (href.startsWith("/") && !external) {
+    return (
+      <Link href={href} className={cls}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <a
+      href={href}
+      className={cls}
+      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+    >
+      {inner}
+    </a>
+  );
+}
+
+/**
+ * The masthead every page below the homepage opens with.
+ *
+ * One shape, used five times, so the site reads as a set rather than as five
+ * pages that happen to share a palette: the running label, the ornament, the
+ * argument in the display face, and a standfirst held to editorial measure.
+ * The optional `aside` takes a short spec list on the right, which is what keeps
+ * a text-only page opening from looking like a blog post.
+ */
+export function PageHero({
+  label,
+  title,
+  standfirst,
+  aside,
+}: {
+  label: string;
+  title: React.ReactNode;
+  standfirst?: React.ReactNode;
+  aside?: { k: string; v: React.ReactNode }[];
+}) {
+  return (
+    <header className="gutter measure-wide pt-10 pb-12 lg:pt-14 lg:pb-16">
+      <div className="rule-t flex items-baseline gap-4 pt-3">
+        <span className="plate-no text-ink-soft">{label}</span>
+        <Petal size={13} strokeWidth={2.4} className="text-ink-soft" />
+      </div>
+
+      <div className="mt-6 grid gap-x-14 gap-y-8 lg:grid-cols-12">
+        <div className={aside ? "lg:col-span-7" : "lg:col-span-9"}>
+          <h1 className="display-hero text-ink max-w-[16ch]">{title}</h1>
+          {standfirst ? (
+            <p className="prose-lead text-ink-deep/75 measure-text mt-6">
+              {standfirst}
+            </p>
+          ) : null}
+        </div>
+
+        {aside ? (
+          <dl className="lg:col-span-4 lg:col-start-9 lg:pt-2">
+            {aside.map((row) => (
+              <SpecRow key={row.k} label={row.k} value={row.v} />
+            ))}
+          </dl>
+        ) : null}
+      </div>
+    </header>
+  );
+}
+
+/**
+ * The hand-off at the foot of every inner page: where a reader who finished
+ * this page most likely wants to go next. Two doors, never more - a wall of
+ * "related links" is a sitemap, not a recommendation.
+ */
+export function NextUp({
+  items,
+}: {
+  items: { label: string; href: string; blurb: string }[];
+}) {
+  return (
+    <nav aria-label="Continue reading" className="gutter measure-wide section-y">
+      <h2 className="spec-label text-ink-soft rule-t pt-3">Next</h2>
+      <ul className="mt-2 grid gap-x-12 sm:grid-cols-2">
+        {items.map((item) => (
+          <li key={item.href} className="rule-b">
+            <Link
+              href={item.href}
+              className="group block py-6 transition-colors duration-(--dur-quick)"
+            >
+              <span className="display-2 group-hover:text-flame-deep flex items-center gap-3 transition-colors duration-(--dur-quick)">
+                {item.label}
+                <svg
+                  width="18"
+                  height="12"
+                  viewBox="0 0 18 12"
+                  aria-hidden="true"
+                  className="text-ink-soft shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:translate-x-1.5"
+                >
+                  <path
+                    d="M0 6h15M11 1.5 15.5 6 11 10.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              <span className="prose-body text-ink-deep/70 mt-2 block max-w-[40ch]">
+                {item.blurb}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
 

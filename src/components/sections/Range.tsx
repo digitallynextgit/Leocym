@@ -10,10 +10,10 @@ import {
   type Family,
   type Product,
 } from "@/content/products";
-import { Petal, PlateNo, SpecRow, Reveal } from "@/components/ui";
+import { PlateNo, SpecRow } from "@/components/ui";
 
 /**
- * Section 4 - The Range.
+ * The catalogue grid, on /products.
  *
  * Information only. There is no price, no cart and no "add to basket" anywhere
  * in this component, by contract (Marketing Strategy §6.3).
@@ -46,23 +46,11 @@ export function Range() {
   }
 
   return (
-    <section id="range" className="gutter measure-wide section-y">
-      <Reveal as="header" className="rule-t block pt-3">
-        <div className="flex items-baseline gap-4">
-          <span className="plate-no text-ink-soft">The range</span>
-          <Petal size={13} strokeWidth={2.4} className="text-ink-soft" />
-        </div>
-        <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <h2 className="display-1 max-w-[15ch]">
-            A product for the smell you actually have.
-          </h2>
-          <p className="prose-lead text-ink-soft max-w-[38ch]">
-            The old approach sells one fragrance for everything. Leocym is built
-            the other way round - a specific formulation for each specific
-            source.
-          </p>
-        </div>
-      </Reveal>
+    <section id="range" className="gutter measure-wide pb-12 lg:pb-16">
+      {/* No section heading here: the page's own <h1> already made the
+          argument, and repeating it above the controls was the single biggest
+          piece of furniture between the reader and the products. What follows
+          is the apparatus - family, filter, plates - and nothing else. */}
 
       {/* ---- Family switch ----
            Plain toggle buttons with aria-pressed, not role="tab". There are no
@@ -72,7 +60,7 @@ export function Range() {
       <div
         role="group"
         aria-label="Product families"
-        className="rule-b mt-8 flex gap-8"
+        className="rule-b flex gap-8"
       >
         {(
           [

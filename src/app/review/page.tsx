@@ -135,11 +135,12 @@ export default function ReviewPage() {
       <Block title="Contractual checks">
         <ul className="prose-body">
           {[
-            "Leocym logo only. No other brand mark exists in this repository.",
-            "The distributor is not named anywhere in shipped content. The build fails if it reappears.",
+            "Leocym logo only. No other brand mark exists in this repository — the distributor gets a text link on 'where to buy', never a logo.",
+            "The distributor is named in exactly two files (content/site.ts and the Where-to-buy section). The build fails if the name appears anywhere else.",
+            "Buying traffic goes to the distributor's own site, never to a marketplace (Marketing Strategy §6.3.3).",
             "No price, no cart, no checkout, and no such field exists in the type system.",
             "No discount, price-comparison or urgency language anywhere.",
-            "One CTA only: the header button and the closing contact section.",
+            "One CTA only per page: the header button and the closing contact section.",
             "Non-product photography is CC0 / public domain; provenance in public/stock/CREDITS.json.",
           ].map((c) => (
             <li key={c} className="rule-b py-3">
