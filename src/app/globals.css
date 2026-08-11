@@ -1,0 +1,486 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   LEOCYM INDIA - BRAND TOKEN LAYER
+   Direction: "French technical apothecary" - editorial type on a spec-sheet grid.
+
+   Every colour below is either sampled from the real Leocym catalogue PDF or
+   taken verbatim from the Rudione Brand Guidelines. Nothing here is invented.
+
+   Discipline: 60 paper / 30 indigo / 10 flame. Green and red are SEMANTIC ONLY
+   (clean vs odour) and never decorative. No gradients. No purple. No zinc.
+   ========================================================================== */
+
+@theme {
+  /* ---- Ground: warm paper. Never #fff, never zinc. --------------------- */
+  --color-paper: #fef4e8;
+  --color-paper-1:#ffffff; /* sampled from the catalogue page ground */
+  --color-paper-2: #f9ead9;
+  --color-paper-3: #f2ddc6;
+  --color-paper-edge: #e6cdb0;
+
+  /* ---- Ink: Leocym Indigo, the dominant colour ------------------------- */
+  --color-ink: #282864; /* Guidelines: Leocym Indigo, Main */
+  --color-ink-deep: #1c1c46; /* Dark */
+  --color-ink-black: #12122d; /* Darkest */
+  /* Guidelines list Leocym Indigo Light as #8989AA, but that measures 2.56:1 on
+     our darkest paper - it fails WCAG AA for the secondary text it is meant for.
+     Darkened to the nearest indigo that clears 4.5:1 on all three paper grounds
+     (4.50 / 5.03 / 5.46). Same hue family, legible. */
+  --color-ink-soft: #5e608e;
+  --color-ink-faint: #d4d4e0; /* Lightest - borders and rules only, never text */
+
+  /* ---- Flame: the ONE sharp accent. ~10% of the page, never more. ------ */
+  --color-flame: #f07814; /* Leocym Orange, Main - grounds only, never text on light */
+  --color-flame-deep: #96490b; /* text-safe on all paper grounds: 5.94 / 5.47 / 4.90 */
+  --color-flame-pale: #fce4d0;
+
+  /* ---- Semantic signals. Meaning, not decoration. ----------------------
+     Each has a light variant for dark grounds and a deep variant for use as a
+     button ground under paper-coloured text. Contrast checked, not guessed. */
+  --color-odour: #dc3c14; /* Leocym Red - "the problem" */
+  --color-odour-deep: #c23411; /* ground under paper text: 5.09 */
+  --color-odour-lite: #ec947e; /* Leocym Red Light - on ink: 5.77 */
+  --color-odour-pale: #f8d8d0;
+  --color-clean: #50a03c; /* Leocym Green - "neutralised / verified" */
+  --color-clean-deep: #38702a; /* ground under paper text: 5.49 */
+  --color-clean-lite: #9fcb94; /* Leocym Green Light - on ink: 7.25 */
+  --color-clean-pale: #dcecd8;
+
+  /* ---- Field: the catalogue's lavender, for large calm blocks ---------- */
+  --color-field: #a6a2b9; /* sampled from the catalogue blob */
+  --color-field-pale: #cfcddc;
+
+  /* ---- Type. Brand-mandated faces. Not Inter, Geist or Space Grotesk. -- */
+  --font-display: var(--font-lora), Georgia, "Times New Roman", serif;
+  --font-ui: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  --font-prose: var(--font-open-sans), Arial, sans-serif;
+  --font-script: var(--font-italianno), cursive;
+
+  /* ---- Radius by ROLE, never global. Data stays sharp; imagery is soft.
+     The catalogue's own product plates sit on generously rounded colour cards,
+     so the containers now match that curve instead of hinting at it. --- */
+  --radius-plate: 22px; /* product plates - matches the catalogue card curve */
+  --radius-photo: 26px; /* photography - soft, editorial */
+  --radius-sm: 10px; /* small surfaces: chips, inline boxes */
+
+  /* ---- Measure: width is a tool, not a constant ------------------------ */
+  --w-editorial: 34rem;
+  --w-text: 46rem;
+  --w-standard: 72rem;
+  --w-wide: 88rem;
+
+  /* ---- Header height. ONE definition, referenced by the header itself, by
+     every full-height section, by the anchor scroll offset and by the mobile
+     nav panel. Change it here and everything stays in register. ---------- */
+  --header-h: 5.25rem;
+
+  /* ---- Motion language: one easing, three durations -------------------- */
+  --ease-brand: cubic-bezier(0.32, 0.72, 0.28, 1);
+  --dur-quick: 140ms;
+  --dur-base: 320ms;
+  --dur-slow: 640ms;
+}
+
+/* ============================================================================
+   BASE
+   ========================================================================== */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink-deep);
+  font-family: var(--font-prose);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--color-flame);
+  color: var(--color-paper);
+}
+
+/* Anchor targets must clear the sticky header, or every in-page jump lands
+   with the heading hidden underneath it. */
+section[id],
+main[id] {
+  scroll-margin-top: calc(var(--header-h) + 0.5rem);
+}
+
+/* Focus: visible, branded, never removed. */
+:focus-visible {
+  outline: 2px solid var(--color-flame);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ============================================================================
+   TYPE SCALE - the display face carries the argument,
+                the UI face carries the evidence.
+   ========================================================================== */
+
+/* Scale note: these were originally ~50% larger, which pushed the hero to 1.3
+   viewports and every other section past one screen on a 740px-tall laptop.
+   Sized down so the sections that reasonably CAN sit in one view do. */
+
+@utility display-hero {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.35rem, 1rem + 3.4vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
+}
+
+@utility display-1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.65rem, 1rem + 2vw, 2.6rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility display-2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.3rem, 1rem + 1.1vw, 1.8rem);
+  line-height: 1.16;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+
+@utility display-3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 1rem + 0.5vw, 1.3rem);
+  line-height: 1.24;
+  letter-spacing: -0.01em;
+}
+
+/* The spec-sheet voice: small, dense, tracked. Labels, data, technique lists. */
+@utility spec-label {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@utility spec-value {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+}
+
+@utility ui-text {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+}
+
+@utility prose-lead {
+  font-family: var(--font-prose);
+  font-size: clamp(1rem, 1rem + 0.15vw, 1.1rem);
+  line-height: 1.55;
+  letter-spacing: -0.003em;
+}
+
+@utility prose-body {
+  font-family: var(--font-prose);
+  font-size: 0.95rem;
+  line-height: 1.62;
+}
+
+/* One section rhythm, applied everywhere, so vertical space is a decision made
+   in one place rather than a py-* guess repeated twelve times.
+
+   It scales with the VIEWPORT HEIGHT, not just the width. On a short laptop
+   screen the padding contracts so the section still fits in one view; on a tall
+   display it opens back up to the full editorial breathing room. A fixed value
+   can only be right for one screen height. */
+@utility section-y {
+  padding-block: clamp(1.35rem, 3.6vh, 3.25rem);
+}
+
+/* ============================================================================
+   MOTION
+
+   Entrances are staggered on scroll, and interactive surfaces respond. All of
+   it is driven by one easing and three durations from @theme, and all of it is
+   switched off wholesale under prefers-reduced-motion (see the media query in
+   BASE above, which zeroes every animation and transition on the page).
+
+   The reveal is CSS-only, triggered by an IntersectionObserver that just adds
+   [data-shown]. No animation library, no layout thrash, nothing that blocks
+   paint — and content is fully visible with JavaScript disabled, because the
+   shown state is the default and the hidden state is only applied once the
+   observer is known to be running.
+   ========================================================================== */
+
+@utility reveal {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-slow) var(--ease-brand),
+    transform var(--dur-slow) var(--ease-brand);
+}
+
+/* `js` is set on <html> by the observer, so no-JS users never see the hidden
+   state. Once revealed, [data-shown] wins. */
+.js .reveal:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.js .reveal-left:not([data-shown]) {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+@utility reveal-left {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-slow) var(--ease-brand),
+    transform var(--dur-slow) var(--ease-brand);
+}
+
+/* Reveal-on-scroll is motion. If motion is declined, the content is simply
+   present from the start rather than popping in as you pass it.
+   This must sit AFTER the .reveal rules above — same specificity, so source
+   order decides, and an earlier copy loses. */
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal:not([data-shown]),
+  .js .reveal-left:not([data-shown]) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   DEPTH
+
+   Restrained, and only ever on imagery — never on text surfaces, which would
+   turn the page into the card-and-shadow layout the rest of the design avoids.
+
+   The shadow is warm-tinted rather than neutral grey: a grey shadow on a cream
+   ground reads as dirt. Two layers, a tight contact shadow plus a wide soft
+   one, which is what actually makes an object look like it is sitting on the
+   page rather than floating above it.
+   --------------------------------------------------------------------------- */
+
+@utility plate-depth {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-ink) 10%, transparent),
+    0 10px 24px -8px color-mix(in srgb, var(--color-ink) 16%, transparent);
+  transition:
+    box-shadow var(--dur-base) var(--ease-brand),
+    transform var(--dur-base) var(--ease-brand);
+}
+
+/* On a dark ground a shadow is invisible, so depth comes from a light rim
+   instead — the same physical read, inverted. */
+@utility plate-depth-inv {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 12%, transparent),
+    0 14px 30px -10px rgb(0 0 0 / 0.45);
+}
+
+.group:hover .plate-depth {
+  box-shadow:
+    0 2px 4px color-mix(in srgb, var(--color-ink) 12%, transparent),
+    0 18px 38px -10px color-mix(in srgb, var(--color-ink) 22%, transparent);
+}
+
+/* Product plates lift slightly and their image scales — one gesture, not two
+   competing ones. */
+@utility lift {
+  transition:
+    transform var(--dur-base) var(--ease-brand),
+    box-shadow var(--dur-base) var(--ease-brand);
+}
+.lift:hover {
+  transform: translateY(-4px);
+}
+
+/* A hairline that draws itself in under a heading as it enters. */
+@keyframes draw-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@utility rule-draw {
+  transform-origin: left;
+}
+.js [data-shown] > .rule-draw,
+.js .rule-draw[data-shown] {
+  animation: draw-rule var(--dur-slow) var(--ease-brand) both;
+}
+
+/* Sections that genuinely fit one screen say so explicitly. svh, not vh, so
+   mobile browser chrome does not push the content out of view. */
+/* "One screen, minus the navbar." Applied to sections that should fill the
+   view exactly. svh rather than vh so mobile browser chrome does not push the
+   content out of sight. Content is centred, so a section shorter than the
+   viewport sits balanced rather than clinging to the top. */
+@utility fits-view {
+  min-height: calc(100svh - var(--header-h));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* The plate number running through the catalogue - a signature detail. */
+@utility plate-no {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.625rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Italianno. Used ONCE on the entire site, as a signature sign-off. */
+@utility signature {
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================================
+   STRUCTURE - hairline rules do the work shadows would do elsewhere
+   ========================================================================== */
+
+/* A scrollbar inside a designed panel. The OS default is a grey Windows
+   chrome bar that belongs to no palette on this site, and it is unavoidably
+   visible in the product dialog. `scrollbar-gutter: stable` reserves the track
+   whether or not it is needed, so content does not shift by 15px the moment
+   the dialog becomes scrollable. */
+@utility scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-ink) 28%, transparent)
+    transparent;
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+    background-color: color-mix(in srgb, var(--color-ink) 28%, transparent);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  }
+}
+
+@utility rule-t {
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+@utility rule-b {
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+@utility rule-l {
+  border-left: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+@utility rule-r {
+  border-right: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+@utility rule-all {
+  border: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+}
+
+/* On indigo grounds the hairline inverts */
+@utility rule-inv-t {
+  border-top: 1px solid color-mix(in srgb, var(--color-paper) 22%, transparent);
+}
+@utility rule-inv-b {
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-paper) 22%, transparent);
+}
+@utility rule-inv-all {
+  border: 1px solid color-mix(in srgb, var(--color-paper) 22%, transparent);
+}
+
+/* Measure - section role decides width */
+@utility measure-editorial {
+  max-width: var(--w-editorial);
+}
+@utility measure-text {
+  max-width: var(--w-text);
+}
+@utility measure-standard {
+  max-width: var(--w-standard);
+  margin-inline: auto;
+}
+@utility measure-wide {
+  max-width: var(--w-wide);
+  margin-inline: auto;
+}
+
+/* Page gutter */
+@utility gutter {
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) {
+    padding-inline: 2.5rem;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 4rem;
+  }
+}
+
+/* Tabular figures for anything numeric - spec-sheet discipline */
+@utility nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================
+   MOTION
+
+   There is deliberately no entrance animation here. The design law for this
+   site is that motion must carry meaning - the mask/neutralise state change,
+   filtering, the sticky-nav hairline - and nothing else. A scroll-reveal on
+   every block is the reflex, not a decision, so the keyframe that used to sit
+   here was removed rather than left declared and unused.
+
+   Durations and easing come from the @theme tokens above, which generate the
+   `duration-quick|base|slow` and `ease-brand` utilities. NOTE: Tailwind v4 no
+   longer implicitly wraps `[--token]` in var(), so `duration-[--dur-quick]`
+   compiles to an invalid declaration and silently disables the transition.
+   Always use the generated theme utilities.
+   ========================================================================== */
