@@ -24,12 +24,31 @@ Everything prerenders as static.
 
 ## Deployment
 
-Hosted on Vercel, connected to `Karanjoshi128/leocym-site`. **Every push to
-`main` deploys to production; every other branch gets a preview URL.**
+The repository is `digitallynextgit/Leocym`, on the company GitHub org. It was
+previously `Karanjoshi128/leocym-site`, on a personal account; that repo is
+history and nothing should be pushed to it.
 
-- Production: https://leocym-site.vercel.app
+Hosted on Vercel. **Every push to `main` deploys to production; every other
+branch gets a preview URL.**
+
+- Production: _to be filled in once the company Vercel project is created._
 - The build runs `scripts/check-claims.mjs` first, so a commit that breaks the
   claims contract **fails the deploy** rather than shipping.
+
+### Wiring up the company Vercel project
+
+A Vercel project is bound to one Git repository and carries its own environment
+variables — none of the old project's settings come across. So:
+
+1. Create the project from `digitallynextgit/Leocym`. Framework preset Next.js;
+   no build-command override, since `npm run build` already chains the claims
+   guard.
+2. **Leave `NEXT_PUBLIC_INDEXABLE` unset.** A fresh project starts with no
+   environment variables, which happens to be the correct state — see below.
+   Do not set it to `true` while wiring things up.
+3. Record the production URL here once it exists.
+4. Delete or disconnect the old personal-account project, so two deployments of
+   this site do not sit on the internet drifting apart.
 
 ### The site is deliberately not indexable yet
 
