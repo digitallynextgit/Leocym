@@ -1,6 +1,6 @@
 import { INDUSTRIAL } from "@/content/industrial";
 import { FRAGRANCES, ODOUR_PRODUCTS } from "@/content/products";
-import { Petal, Reveal } from "@/components/ui";
+import { Reveal, SectionLabel, Stagger } from "@/components/ui";
 
 /**
  * "Time-tested, Europe-trusted technology" — the second half of what the
@@ -44,16 +44,13 @@ export function Heritage() {
   ];
 
   return (
-    <section className="bg-ink-black text-paper">
-      <div className="gutter measure-wide section-y">
+    <section className="bg-ink text-paper band">
+      <div className="gutter measure-wide section-y-lg">
         <Reveal>
           <header className="rule-inv-t pt-3">
-            <div className="flex items-baseline gap-4">
-              <span className="plate-no text-field-pale">
-                Time-tested, Europe-trusted
-              </span>
-              <Petal size={13} strokeWidth={2.4} className="text-paper/60" />
-            </div>
+            <SectionLabel tone="paper">
+              Time-tested, Europe-trusted
+            </SectionLabel>
             <div className="mt-5 grid gap-x-14 gap-y-5 lg:grid-cols-12">
               <h2 className="display-1 lg:col-span-6">
                 The technology is old. That is the point.
@@ -67,24 +64,29 @@ export function Heritage() {
           </header>
         </Reveal>
 
-        <ol className="mt-10 grid gap-x-14 gap-y-0 lg:grid-cols-2">
-          {PROPOSITIONS.map((p, i) => (
-            <Reveal
-              as="li"
+        <Stagger
+          as="ol"
+          delay={60}
+          step={90}
+          className="mt-10 grid gap-x-14 gap-y-0 lg:grid-cols-2"
+        >
+          {PROPOSITIONS.map((p) => (
+            <li
               key={p.n}
-              delay={i * 60}
-              className="rule-inv-t grid grid-cols-[2.5rem_1fr] gap-x-4 py-6"
+              className="group rule-inv-t grid grid-cols-[2.5rem_1fr] gap-x-4 py-6"
             >
-              <span className="plate-no nums text-field-pale pt-1.5">{p.n}</span>
+              <span className="plate-no nums text-field-pale group-hover:text-flame pt-1.5 transition-colors duration-(--dur-base)">
+                {p.n}
+              </span>
               <div>
                 <h3 className="display-3">{p.title}</h3>
                 <p className="prose-body text-paper/75 mt-2 max-w-[46ch]">
                   {p.body}
                 </p>
               </div>
-            </Reveal>
+            </li>
           ))}
-        </ol>
+        </Stagger>
       </div>
     </section>
   );

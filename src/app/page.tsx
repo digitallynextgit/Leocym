@@ -5,7 +5,9 @@ import {
   RangePreview,
   ScalePreview,
 } from "@/components/sections/Previews";
+import { Ticker } from "@/components/sections/Ticker";
 import { Closing } from "@/components/sections/Closing";
+import { PageTransition } from "@/components/PageTransition";
 
 import { PRODUCTS } from "@/content/products";
 import { NAV, SITE } from "@/content/site";
@@ -27,9 +29,10 @@ import { NAV, SITE } from "@/content/site";
  *   1 Hero          the promise, one action
  *   2 Difference    the argument the whole brand rests on, full screen
  *   3 Range         six plates out of twenty-six          -> /products
- *   4 Scale         five segments, one photograph          -> /for-business
- *   5 Origin        three sentences and a map              -> /brand-story
- *   6 Closing       the one CTA           -> /contact, /where-to-buy
+ *   4 Ticker        the breadth of the range, in one line
+ *   5 Scale         five segments, one photograph          -> /for-business
+ *   6 Origin        three sentences and a map              -> /brand-story
+ *   7 Closing       the one CTA           -> /contact, /where-to-buy
  *
  * Nothing was deleted. Method, Science, Areas, Industrial, the full catalogue
  * and the questions all moved to the page where a reader has a reason to want
@@ -38,15 +41,16 @@ import { NAV, SITE } from "@/content/site";
  */
 export default function Page() {
   return (
-    <>
+    <PageTransition>
       <StructuredData />
       <Hero />
       <Difference />
       <RangePreview />
+      <Ticker />
       <ScalePreview />
       <OriginPreview />
       <Closing />
-    </>
+    </PageTransition>
   );
 }
 

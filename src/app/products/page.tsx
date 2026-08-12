@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageTransition } from "@/components/PageTransition";
 import { Range } from "@/components/sections/Range";
 import { Closing } from "@/components/sections/Closing";
 import { NextUp, PageHero } from "@/components/ui";
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
  */
 export default function ProductsPage() {
   return (
-    <>
+    <PageTransition>
       <CatalogueData />
 
       <PageHero
@@ -63,7 +64,7 @@ export default function ProductsPage() {
         title="Not sure which one treats your smell?"
         standfirst="Describe the site and the source. The range is large on purpose, and the right answer is usually one product rather than three."
       />
-    </>
+    </PageTransition>
   );
 }
 

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { INDUSTRIAL, type IndustrialSegment } from "@/content/industrial";
-import { Petal, Reveal } from "@/components/ui";
+import { Reveal, SectionLabel, Stagger } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 
 /**
@@ -29,12 +29,13 @@ import { Icon } from "@/components/Icon";
  * white that came out grey, and outlines so faint the chips barely registered.
  * Four changes, none of them a new colour:
  *
- *   1. Ground moved to `ink-black`, which Range already uses. The site had
- *      THREE near-identical navies doing dark duty (ink, ink-deep, ink-black);
- *      this consolidates to two, so dark grounds now read as a system rather
- *      than as drift.
+ *   1. Ground is `ink` - the brand indigo itself. It was briefly `ink-black`,
+ *      which was worse for a different reason: dropping from paper straight to
+ *      near-black mid-page is a cliff, not a transition. `ink-black` is now
+ *      reserved for the footer, so the three near-identical navies read as a
+ *      system - indigo for a dark band, black for the end of the document.
  *   2. Labels and plate numbers use `field-pale`, a real token, instead of
- *      translucent white. 11.7:1 here, and predictable.
+ *      translucent white. 8.5:1 here, and predictable.
  *   3. Icons come off orange. Orange is being reserved for interaction, and
  *      these are wayfinding. Green was the tempting alternative and is wrong -
  *      the token layer reserves green and red as SEMANTIC ONLY, and a waste
@@ -46,15 +47,10 @@ import { Icon } from "@/components/Icon";
  */
 export function Industrial() {
   return (
-    <section id="industrial" className="bg-ink-black text-paper">
-      <div className="gutter measure-wide section-y">
+    <section id="industrial" className="bg-ink text-paper band">
+      <div className="gutter measure-wide section-y-lg">
         <Reveal as="header" className="rule-inv-t block pt-3">
-          <div className="flex items-baseline gap-4">
-            <span className="plate-no text-field-pale">
-              Industrial &amp; large scale
-            </span>
-            <Petal size={13} strokeWidth={2.4} className="text-paper/60" />
-          </div>
+          <SectionLabel tone="paper">Industrial &amp; large scale</SectionLabel>
           <div className="mt-4 grid gap-8 lg:grid-cols-12">
             <h2 className="display-1 lg:col-span-6">
               The same technology that treats a landfill treats a washroom.
@@ -67,9 +63,12 @@ export function Industrial() {
           </div>
         </Reveal>
 
-        <div className="mt-10 lg:mt-12">
-          {INDUSTRIAL.map((seg, i) => (
-            <Reveal key={seg.slug} delay={i === 0 ? 0 : 50}>
+        <div className="mt-14 lg:mt-20">
+          {/* Each segment is observed on its own rather than cascaded off one
+              parent: they are a screen tall each, so a shared stagger would
+              have segment five entering long before the reader reaches it. */}
+          {INDUSTRIAL.map((seg) => (
+            <Reveal key={seg.slug}>
               <Segment seg={seg} />
             </Reveal>
           ))}
@@ -81,7 +80,7 @@ export function Industrial() {
 
 function Segment({ seg }: { seg: IndustrialSegment }) {
   return (
-    <article className="rule-inv-t grid grid-cols-1 items-start gap-x-10 gap-y-5 py-7 first:border-t-0 first:pt-0 lg:grid-cols-12 lg:py-8">
+    <article className="rule-inv-t grid grid-cols-1 items-start gap-x-14 gap-y-8 py-12 first:border-t-0 first:pt-0 lg:grid-cols-12 lg:py-16">
       {/* ---- Left: identity and specification, in that order, every time.
              The chips live here rather than in a full-width row underneath,
              which is what stops a tall photograph leaving dead space beside
@@ -110,7 +109,11 @@ function Segment({ seg }: { seg: IndustrialSegment }) {
              section read as a gallery with captions rather than a spec sheet
              with evidence. ---- */}
       <figure className="lg:col-span-5">
-        <div className="rounded-photo plate-depth-inv relative aspect-3/2 overflow-hidden">
+        {/* The photograph drifts inside its frame as the segment passes, driven
+            by the scroll timeline rather than by a listener. Five of these
+            stacked would be a gallery if they all sat still; the drift is what
+            keeps the eye moving down the page. */}
+        <div className="rounded-photo plate-depth-inv parallax relative aspect-3/2">
           <Image
             src={seg.image}
             alt={`${seg.title} — odour control in operation on site`}
@@ -129,16 +132,23 @@ function ChipRow({ label, items }: { label: string; items: string[] }) {
   return (
     <div>
       <h4 className="spec-label text-field-pale">{label}</h4>
-      <ul className="mt-2.5 flex flex-wrap gap-1.5">
+      {/* The chips deal out quickly - 45ms apart, which reads as one gesture
+          with texture rather than as a queue. */}
+      <Stagger
+        as="ul"
+        step={45}
+        delay={120}
+        className="mt-2.5 flex flex-wrap gap-1.5"
+      >
         {items.map((t) => (
           <li
             key={t}
-            className="spec-value text-paper bg-paper/10 border border-paper/20 rounded-sm px-2.5 py-1"
+            className="spec-value text-paper bg-paper/10 border-paper/20 hover:bg-paper/20 rounded-sm border px-2.5 py-1 transition-colors duration-(--dur-quick)"
           >
             {t}
           </li>
         ))}
-      </ul>
+      </Stagger>
     </div>
   );
 }

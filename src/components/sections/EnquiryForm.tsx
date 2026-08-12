@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { SITE } from "@/content/site";
-import { Petal } from "@/components/ui";
+import { Petal, Stagger } from "@/components/ui";
 
 /**
  * The business enquiry and contact form — sitemap Part C, item 7.
@@ -103,8 +103,18 @@ export function EnquiryForm() {
   }
 
   if (status.state === "sent") {
+    /* The confirmation is the one moment on the site where an entrance is
+       carrying relief rather than composition, so it gets a slightly longer
+       step than anything else: the ornament draws itself, then the sentence
+       arrives. `data-shown` is set directly because this element only exists
+       once the send has succeeded - there is nothing to wait for. */
     return (
-      <div className="rule-all rounded-photo bg-paper-2 p-8 sm:p-12">
+      <div
+        data-stagger
+        data-shown
+        style={{ "--stagger-step": "110ms" } as React.CSSProperties}
+        className="rule-all rounded-photo bg-paper-2 p-8 sm:p-12"
+      >
         <Petal size={40} className="text-clean-deep" />
         <h2 className="display-2 mt-6">That has reached us.</h2>
         <p className="prose-lead text-ink-deep/80 measure-text mt-4">
@@ -213,11 +223,11 @@ export function EnquiryForm() {
           It decides who reads it first.
         </p>
 
-        <div className="mt-4">
+        <Stagger step={55} className="mt-4">
           {ENQUIRY_TYPES.map((t, i) => (
             <label
               key={t.value}
-              className="rule-b hover:bg-paper-3/50 flex cursor-pointer items-start gap-3.5 py-3 transition-colors duration-(--dur-quick)"
+              className="rule-b hover:bg-paper-3/50 -mx-3 flex cursor-pointer items-start gap-3.5 px-3 py-3 transition-colors duration-(--dur-quick)"
             >
               <input
                 type="radio"
@@ -237,7 +247,7 @@ export function EnquiryForm() {
               </span>
             </label>
           ))}
-        </div>
+        </Stagger>
         {fieldErrors.enquiryType ? (
           <p className="spec-value text-odour-deep mt-2">
             {fieldErrors.enquiryType}
@@ -291,9 +301,21 @@ export function EnquiryForm() {
         <button
           type="submit"
           disabled={sending}
-          className="ui-text bg-flame text-ink hover:bg-flame-deep hover:text-paper inline-flex shrink-0 items-center justify-center px-7 py-3.5 transition-colors duration-(--dur-quick) disabled:cursor-not-allowed disabled:opacity-60"
+          style={
+            { "--fill": "var(--color-flame-deep)" } as React.CSSProperties
+          }
+          className="ui-text fill-rise bg-flame text-ink hover:text-paper inline-flex shrink-0 items-center justify-center gap-3 px-7 py-3.5 transition-colors duration-(--dur-base) disabled:cursor-not-allowed disabled:opacity-60"
         >
           {sending ? "Sending…" : "Send enquiry"}
+          {/* A real indeterminate indicator, not a disabled button that looks
+              broken. It replaces the arrow, so the button never changes width
+              mid-send and the row does not reflow under the cursor. */}
+          <span
+            aria-hidden="true"
+            className={`block h-3.5 w-3.5 shrink-0 rounded-full border-2 border-current ${
+              sending ? "spin-quick border-t-transparent" : "border-transparent"
+            }`}
+          />
         </button>
       </div>
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageTransition } from "@/components/PageTransition";
 import { WhereToBuy } from "@/components/sections/WhereToBuy";
 import { NextUp, PageHero } from "@/components/ui";
 import { PRODUCTS } from "@/content/products";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
  */
 export default function WhereToBuyPage() {
   return (
-    <>
+    <PageTransition>
       <PageHero
         label="Where to buy"
         title="This site does not sell. Here is the one that does."
@@ -51,6 +52,6 @@ export default function WhereToBuyPage() {
           },
         ]}
       />
-    </>
+    </PageTransition>
   );
 }

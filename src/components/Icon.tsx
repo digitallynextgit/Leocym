@@ -231,9 +231,14 @@ export function Icon({
 export function FranceMap({
   className = "",
   markerClassName = "",
+  pulse = true,
 }: {
   className?: string;
   markerClassName?: string;
+  /** The ring around Douai repeats outward, the way a place marker does on
+      every map interface a reader has ever used. It is the one thing on this
+      drawing that says "here", so it is the one thing that moves. */
+  pulse?: boolean;
 }) {
   return (
     <svg
@@ -278,6 +283,9 @@ export function FranceMap({
           stroke="currentColor"
           strokeWidth="1.4"
           opacity="0.4"
+          /* transform-box/origin come with the utility, so the ring expands
+             from the marker rather than from the corner of the viewBox. */
+          className={pulse ? "ping-slow" : ""}
         />
       </g>
     </svg>

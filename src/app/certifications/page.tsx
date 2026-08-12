@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageTransition } from "@/components/PageTransition";
 import { Compliance } from "@/components/sections/Compliance";
 import { Closing } from "@/components/sections/Closing";
 import { NextUp, PageHero } from "@/components/ui";
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
  */
 export default function CertificationsPage() {
   return (
-    <>
+    <PageTransition>
       <PageHero
         label="Certifications & safety"
         title="If we cannot prove it, we do not say it."
@@ -63,6 +64,6 @@ export default function CertificationsPage() {
         title="Which document does your file need?"
         standfirst="Name the product and the paperwork. Safety data sheets, composition statements, technical data and any certificate held all come back as the document itself."
       />
-    </>
+    </PageTransition>
   );
 }

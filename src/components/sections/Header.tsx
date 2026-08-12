@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CTA, NAV, SITE } from "@/content/site";
-import { Wordmark } from "@/components/ui";
+import { ScrollProgress, Wordmark } from "@/components/ui";
 
 /**
  * The header. One instance, in the root layout, shared by every page.
@@ -84,8 +84,12 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-paper transition-shadow duration-(--dur-base) ${
-        scrolled ? "rule-b" : ""
+      /* Named so the route transition can pin it. Without this the header is
+         part of the root snapshot and appears to slide with the page, which
+         costs the reader the one fixed point they have during a navigation. */
+      style={{ viewTransitionName: "site-header" }}
+      className={`bg-paper sticky top-0 z-50 transition-shadow duration-(--dur-base) ${
+        scrolled ? "rule-b shadow-[0_1px_20px_-12px_var(--color-ink)]" : ""
       }`}
     >
       <div className="gutter measure-wide flex h-(--header-h) items-center justify-between gap-6">
@@ -93,7 +97,7 @@ export function Header() {
           href="/"
           aria-label="Leocym, home"
           aria-current={pathname === "/" ? "page" : undefined}
-          className="shrink-0 leading-none"
+          className="shrink-0 leading-none transition-transform duration-(--dur-base) ease-brand hover:scale-[1.06]"
         >
           <Wordmark width={46} className="h-auto w-[46px]" />
         </Link>
@@ -107,13 +111,25 @@ export function Header() {
                   <Link
                     href={item.href}
                     aria-current={current ? "page" : undefined}
-                    className={`ui-text relative block border-b-2 py-1.5 transition-colors duration-(--dur-quick) ${
+                    className={`ui-text group relative block py-1.5 transition-colors duration-(--dur-quick) ${
                       current
-                        ? "border-flame text-ink"
-                        : "hover:text-flame-deep focus-visible:text-flame-deep text-ink-deep border-transparent"
+                        ? "text-ink"
+                        : "hover:text-flame-deep focus-visible:text-flame-deep text-ink-deep"
                     }`}
                   >
                     {item.label}
+                    {/* The current page's rule is already drawn. A hover draws
+                        one in from the left, so the gesture that marks where
+                        you ARE and the gesture that offers where you COULD go
+                        are the same mark at two stages. */}
+                    <span
+                      aria-hidden="true"
+                      className={`bg-flame absolute inset-x-0 -bottom-px h-0.5 origin-left transition-transform duration-(--dur-base) ease-brand ${
+                        current
+                          ? "scale-x-100"
+                          : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                      }`}
+                    />
                   </Link>
                 </li>
               );
@@ -124,7 +140,8 @@ export function Header() {
         <div className="flex items-center gap-3">
           <Link
             href={CTA.href}
-            className="ui-text bg-ink text-paper hover:bg-flame hover:text-ink inline-flex px-4 py-2.5 transition-colors duration-(--dur-quick) sm:px-5"
+            style={{ "--fill": "var(--color-flame)" } as React.CSSProperties}
+            className="ui-text fill-rise bg-ink text-paper hover:text-ink inline-flex px-4 py-2.5 transition-colors duration-(--dur-base) sm:px-5"
           >
             <span className="sm:hidden">Enquire</span>
             <span className="hidden sm:inline">{CTA.label}</span>
@@ -135,38 +152,60 @@ export function Header() {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav"
-            className="rule-all text-ink flex h-10 w-10 items-center justify-center lg:hidden"
+            className="rule-all text-ink hover:border-ink flex h-10 w-10 items-center justify-center transition-colors duration-(--dur-quick) lg:hidden"
           >
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-            <svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true">
-              {open ? (
-                <g stroke="currentColor" strokeWidth="1.6">
-                  <line x1="2" y1="1.5" x2="14" y2="10.5" />
-                  <line x1="14" y1="1.5" x2="2" y2="10.5" />
-                </g>
-              ) : (
-                <g stroke="currentColor" strokeWidth="1.6">
-                  <line x1="0" y1="1.5" x2="16" y2="1.5" />
-                  <line x1="0" y1="6" x2="16" y2="6" />
-                  <line x1="0" y1="10.5" x2="16" y2="10.5" />
-                </g>
-              )}
-            </svg>
+            {/* Three rules that fold into a cross, rather than one icon being
+                swapped for another. The bars are the same objects throughout,
+                so the control reads as a state change instead of a redraw. */}
+            <span aria-hidden="true" className="relative block h-2.5 w-4">
+              <span
+                className={`absolute left-0 block h-px w-full bg-current transition-all duration-(--dur-base) ease-brand ${
+                  open ? "top-[5px] rotate-45" : "top-0"
+                }`}
+              />
+              <span
+                className={`absolute top-[5px] left-0 block h-px w-full bg-current transition-all duration-(--dur-quick) ${
+                  open ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100"
+                }`}
+              />
+              <span
+                className={`absolute left-0 block h-px w-full bg-current transition-all duration-(--dur-base) ease-brand ${
+                  open ? "top-[5px] -rotate-45" : "top-2.5"
+                }`}
+              />
+            </span>
           </button>
         </div>
       </div>
+
+      {/* How far through the document the reader is. Pure CSS, driven by the
+          scroll timeline rather than by a listener - see globals.css §7. */}
+      <ScrollProgress />
 
       <div
         id="mobile-nav"
         ref={panelRef}
         hidden={!open}
-        className="rule-t bg-paper fixed inset-x-0 bottom-0 top-(--header-h) z-40 overflow-y-auto lg:hidden"
+        className="rule-t bg-paper fixed inset-x-0 top-(--header-h) bottom-0 z-40 overflow-y-auto lg:hidden"
       >
         {/* The mobile panel carries each page's one-line blurb. On a phone the
             panel IS the sitemap, and a bare list of five nouns tells a first-time
-            visitor nothing about which one they want. */}
-        <nav aria-label="Primary, mobile" className="gutter py-4">
-          <ul>
+            visitor nothing about which one they want.
+
+            Keyed on `open` so the whole panel remounts each time it is opened,
+            which is what lets the entrance replay rather than firing once on
+            the first open and never again. */}
+        <nav
+          key={open ? "open" : "closed"}
+          aria-label="Primary, mobile"
+          className="gutter panel-in py-4"
+        >
+          <ul
+            data-stagger
+            data-shown
+            style={{ "--stagger-step": "55ms" } as React.CSSProperties}
+          >
             {NAV.map((item) => {
               const current = isCurrent(item.href);
               return (
@@ -174,10 +213,10 @@ export function Header() {
                   <Link
                     href={item.href}
                     aria-current={current ? "page" : undefined}
-                    className="rule-b block py-4"
+                    className="group rule-b block py-4"
                   >
                     <span
-                      className={`display-3 flex items-center gap-2.5 ${
+                      className={`display-3 group-hover:text-flame-deep flex items-center gap-2.5 transition-colors duration-(--dur-quick) ${
                         current ? "text-flame-deep" : ""
                       }`}
                     >
@@ -199,7 +238,8 @@ export function Header() {
           </ul>
           <Link
             href={CTA.href}
-            className="ui-text bg-ink text-paper mt-8 block px-5 py-4 text-center"
+            style={{ "--fill": "var(--color-flame)" } as React.CSSProperties}
+            className="ui-text fill-rise bg-ink text-paper hover:text-ink mt-8 block px-5 py-4 text-center transition-colors duration-(--dur-base)"
           >
             {CTA.label}
           </Link>

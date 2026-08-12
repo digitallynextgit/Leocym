@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Reveal, Stagger } from "./Reveal";
 
 /* ============================================================================
    Shared primitives.
@@ -12,15 +13,23 @@ import Link from "next/link";
 /**
  * The five-petal line flower from the Leocym catalogue, redrawn as SVG.
  * Used as section punctuation - the brand's own ornament, not a stock icon.
+ *
+ * The petals draw themselves in sequence once an ancestor Reveal has fired,
+ * which is the one place on this site where an ornament is allowed to move: it
+ * is punctuation, so it should arrive after the sentence it punctuates.
  */
 export function Petal({
   className = "",
   size = 56,
   strokeWidth = 1.4,
+  draw = true,
 }: {
   className?: string;
   size?: number;
   strokeWidth?: number;
+  /** Set false where the ornament is decorative furniture rather than a mark
+      of punctuation - the footer's large one, for instance. */
+  draw?: boolean;
 }) {
   return (
     <svg
@@ -29,19 +38,43 @@ export function Petal({
       viewBox="-50 -50 100 100"
       fill="none"
       aria-hidden="true"
-      className={className}
+      className={`${draw ? "petal-draw" : ""} ${className}`}
     >
       <g stroke="currentColor" strokeWidth={strokeWidth} strokeLinejoin="round">
-        {[0, 72, 144, 216, 288].map((deg) => (
+        {[0, 72, 144, 216, 288].map((deg, i) => (
           <path
             key={deg}
             transform={`rotate(${deg})`}
+            /* Normalised so one stroke-dasharray value draws every petal
+               regardless of its real path length. */
+            pathLength={1}
+            style={{ "--i": i } as React.CSSProperties}
             d="M0 -6 C -14 -20 -12 -42 2 -42 C 16 -42 18 -20 0 -6 Z"
           />
         ))}
       </g>
       <circle cx="0" cy="0" r="3.2" fill="currentColor" />
     </svg>
+  );
+}
+
+/**
+ * The reading-progress hairline under the header.
+ *
+ * No JavaScript: it is a CSS scroll-driven animation, so the browser advances
+ * it off the scroll position itself rather than off a scroll listener that has
+ * to run on the main thread. Where `animation-timeline` is unsupported the bar
+ * simply stays at zero width and nothing else changes; under reduced motion it
+ * is not drawn at all (see globals.css).
+ */
+export function ScrollProgress() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 overflow-hidden"
+    >
+      <div className="scroll-progress bg-flame h-full w-full" />
+    </div>
   );
 }
 
@@ -108,6 +141,45 @@ export function PlateNo({
 }
 
 /**
+ * The running label above a section heading, with the flame tick that draws
+ * itself in as the block arrives.
+ *
+ * Pulled out of SectionHead because five different section openers were each
+ * rebuilding this same three-part row - label, ornament, rule - by hand, and
+ * the motion had to be added to all of them or none.
+ *
+ * The tick keys off `[data-shown]` on an ancestor, so it draws when the Reveal
+ * that wraps the section fires. Outside a Reveal it simply sits at full width.
+ */
+export function SectionLabel({
+  children,
+  tone = "ink",
+  className = "",
+  meta,
+}: {
+  children: React.ReactNode;
+  tone?: "ink" | "paper";
+  className?: string;
+  /** Optional right-aligned count, e.g. "26 products". */
+  meta?: React.ReactNode;
+}) {
+  const muted = tone === "ink" ? "text-ink-soft" : "text-paper/65";
+  return (
+    <div className={`flex items-baseline justify-between gap-4 ${className}`}>
+      <div className="flex items-baseline gap-4">
+        <span
+          aria-hidden="true"
+          className="draw-x bg-flame mr-1 h-0.5 w-7 shrink-0 self-center"
+        />
+        <span className={`plate-no ${muted}`}>{children}</span>
+        <Petal size={13} strokeWidth={2.4} className={muted} />
+      </div>
+      {meta ? <span className={`spec-label nums ${muted}`}>{meta}</span> : null}
+    </div>
+  );
+}
+
+/**
  * Section opener. Takes an index, a title and an optional standfirst.
  * The index is a spec-sheet device, not a decorative eyebrow badge.
  */
@@ -130,10 +202,9 @@ export function SectionHead({
   const rule = tone === "ink" ? "rule-t" : "rule-inv-t";
   return (
     <header className={className} id={id}>
-      <div className={`${rule} flex items-baseline gap-4 pt-3`}>
-        <span className={`plate-no ${muted}`}>{index}</span>
-        <Petal size={13} strokeWidth={2.4} className={muted} />
-      </div>
+      <SectionLabel tone={tone} className={`${rule} pt-3`}>
+        {index}
+      </SectionLabel>
       <h2 className="display-1 mt-6 max-w-[18ch]">{title}</h2>
       {standfirst ? (
         <p className={`prose-lead measure-editorial mt-5 ${muted}`}>
@@ -166,20 +237,29 @@ export function Action({
   className?: string;
   external?: boolean;
 }) {
+  /* The hover is a fill that RISES from the bottom edge rather than a flat
+     colour swap - one gesture, used by every button on the site, so a hover
+     here always reads the same way. `fill-rise` isolates and paints the fill on
+     a negative z-index, which is what keeps it over the button's own ground and
+     under its label without a second wrapper element. */
   const base =
-    "ui-text inline-flex items-center justify-center px-6 py-3 transition-colors duration-(--dur-quick) ease-brand";
+    "ui-text fill-rise inline-flex items-center justify-center px-6 py-3 transition-colors duration-(--dur-base) ease-brand";
   const styles = {
-    primary:
-      "bg-flame text-ink hover:bg-flame-deep hover:text-paper active:bg-flame-deep",
-    quiet: "rule-all text-ink hover:bg-ink hover:text-paper active:bg-ink-deep",
-    inverse:
-      "rule-inv-all text-paper hover:bg-paper hover:text-ink active:bg-paper/90",
+    primary: "bg-flame text-ink hover:text-paper active:text-paper",
+    quiet: "rule-all text-ink hover:text-paper active:text-paper",
+    inverse: "rule-inv-all text-paper hover:text-ink active:text-ink",
+  }[variant];
+  const fill = {
+    primary: "var(--color-flame-deep)",
+    quiet: "var(--color-ink)",
+    inverse: "var(--color-paper)",
   }[variant];
   const cls = `${base} ${styles} ${className}`;
+  const style = { "--fill": fill } as React.CSSProperties;
 
   if (href.startsWith("/") && !external) {
     return (
-      <Link href={href} className={cls}>
+      <Link href={href} className={cls} style={style}>
         {children}
       </Link>
     );
@@ -188,6 +268,7 @@ export function Action({
     <a
       href={href}
       className={cls}
+      style={style}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
     >
       {children}
@@ -220,7 +301,10 @@ export function TextLink({
   const cls = `ui-text group inline-flex items-center gap-2 transition-colors duration-(--dur-quick) ${colour} ${className}`;
   const inner = (
     <>
-      <span className="underline decoration-1 underline-offset-4">
+      {/* The rule stays at rest - a link that is only underlined on hover is a
+          link a reader has to find. What moves is its DISTANCE from the
+          baseline, which reads as the word lifting slightly towards you. */}
+      <span className="underline decoration-1 underline-offset-4 transition-[text-underline-offset] duration-(--dur-base) ease-brand group-hover:underline-offset-[7px] group-focus-visible:underline-offset-[7px]">
         {children}
       </span>
       <svg
@@ -228,7 +312,7 @@ export function TextLink({
         height="10"
         viewBox="0 0 16 10"
         aria-hidden="true"
-        className="shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:translate-x-1"
+        className="shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:translate-x-1.5 group-focus-visible:translate-x-1.5"
       >
         <path
           d="M0 5h14M10 1l4 4-4 4"
@@ -280,25 +364,50 @@ export function PageHero({
   standfirst?: React.ReactNode;
   aside?: { k: string; v: React.ReactNode }[];
 }) {
+  /* Everything here is ABOVE the fold, so none of it is observed - there would
+     be nothing to wait for. It runs on load instead, sequenced with `--d`, so
+     the page opening assembles itself in reading order: label, headline,
+     standfirst, then the spec rows down the right. */
   return (
     <header className="gutter measure-wide pt-10 pb-12 lg:pt-14 lg:pb-16">
-      <div className="rule-t flex items-baseline gap-4 pt-3">
-        <span className="plate-no text-ink-soft">{label}</span>
-        <Petal size={13} strokeWidth={2.4} className="text-ink-soft" />
+      <div
+        data-shown
+        className="rule-t enter pt-3"
+        style={{ "--d": "40ms" } as React.CSSProperties}
+      >
+        <SectionLabel>{label}</SectionLabel>
       </div>
 
       <div className="mt-6 grid gap-x-14 gap-y-8 lg:grid-cols-12">
         <div className={aside ? "lg:col-span-7" : "lg:col-span-9"}>
-          <h1 className="display-hero text-ink max-w-[16ch]">{title}</h1>
+          <h1
+            className="display-hero enter-wipe text-ink max-w-[16ch]"
+            style={{ "--d": "150ms" } as React.CSSProperties}
+          >
+            {title}
+          </h1>
           {standfirst ? (
-            <p className="prose-lead text-ink-deep/75 measure-text mt-6">
+            <p
+              className="prose-lead enter text-ink-deep/75 measure-text mt-6"
+              style={{ "--d": "330ms" } as React.CSSProperties}
+            >
               {standfirst}
             </p>
           ) : null}
         </div>
 
         {aside ? (
-          <dl className="lg:col-span-4 lg:col-start-9 lg:pt-2">
+          <dl
+            data-stagger
+            data-shown
+            className="lg:col-span-4 lg:col-start-9 lg:pt-2"
+            style={
+              {
+                "--rv-delay": "420ms",
+                "--stagger-step": "70ms",
+              } as React.CSSProperties
+            }
+          >
             {aside.map((row) => (
               <SpecRow key={row.k} label={row.k} value={row.v} />
             ))}
@@ -320,14 +429,21 @@ export function NextUp({
   items: { label: string; href: string; blurb: string }[];
 }) {
   return (
-    <nav aria-label="Continue reading" className="gutter measure-wide section-y">
-      <h2 className="spec-label text-ink-soft rule-t pt-3">Next</h2>
-      <ul className="mt-2 grid gap-x-12 sm:grid-cols-2">
+    <nav aria-label="Continue reading" className="gutter measure-wide section-y-lg">
+      <Reveal>
+        <h2 className="spec-label text-ink-soft rule-t pt-3">Next</h2>
+      </Reveal>
+      <Stagger
+        as="ul"
+        delay={60}
+        step={90}
+        className="mt-2 grid gap-x-12 sm:grid-cols-2"
+      >
         {items.map((item) => (
           <li key={item.href} className="rule-b">
             <Link
               href={item.href}
-              className="group block py-6 transition-colors duration-(--dur-quick)"
+              className="group hover:bg-paper-2/60 -mx-3 block px-3 py-6 transition-colors duration-(--dur-base)"
             >
               <span className="display-2 group-hover:text-flame-deep flex items-center gap-3 transition-colors duration-(--dur-quick)">
                 {item.label}
@@ -336,7 +452,7 @@ export function NextUp({
                   height="12"
                   viewBox="0 0 18 12"
                   aria-hidden="true"
-                  className="text-ink-soft shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:translate-x-1.5"
+                  className="text-ink-soft group-hover:text-flame-deep shrink-0 transition-all duration-(--dur-base) ease-brand group-hover:translate-x-2"
                 >
                   <path
                     d="M0 6h15M11 1.5 15.5 6 11 10.5"
@@ -354,7 +470,7 @@ export function NextUp({
             </Link>
           </li>
         ))}
-      </ul>
+      </Stagger>
     </nav>
   );
 }
@@ -380,4 +496,5 @@ export function SpecRow({
 }
 
 /* Re-exported so sections import one module for primitives. */
-export { Reveal } from "./Reveal";
+export { Reveal, Stagger } from "./Reveal";
+export { Counter } from "./Counter";

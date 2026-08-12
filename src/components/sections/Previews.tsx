@@ -4,7 +4,13 @@ import { CLEANING_PRODUCTS, ODOUR_PRODUCTS } from "@/content/products";
 import { INDUSTRIAL } from "@/content/industrial";
 import { AREAS_COUNT } from "@/content/misc";
 import { SITE } from "@/content/site";
-import { Petal, Reveal, TextLink } from "@/components/ui";
+import {
+  Counter,
+  Reveal,
+  SectionLabel,
+  Stagger,
+  TextLink,
+} from "@/components/ui";
 import { FranceMap, Icon } from "@/components/Icon";
 
 /* ============================================================================
@@ -33,20 +39,15 @@ function PreviewHead({
   title: React.ReactNode;
   standfirst: React.ReactNode;
   tone?: "ink" | "paper";
-  meta?: string;
+  meta?: React.ReactNode;
 }) {
-  const muted = tone === "ink" ? "text-ink-soft" : "text-paper/65";
   const rule = tone === "ink" ? "rule-t" : "rule-inv-t";
   const body = tone === "ink" ? "text-ink-deep/75" : "text-paper/75";
   return (
     <header className={`${rule} pt-3`}>
-      <div className="flex items-baseline justify-between gap-4">
-        <div className="flex items-baseline gap-4">
-          <span className={`plate-no ${muted}`}>{label}</span>
-          <Petal size={13} strokeWidth={2.4} className={muted} />
-        </div>
-        {meta ? <span className={`spec-label nums ${muted}`}>{meta}</span> : null}
-      </div>
+      <SectionLabel tone={tone} meta={meta}>
+        {label}
+      </SectionLabel>
       <div className="mt-5 grid gap-x-14 gap-y-5 lg:grid-cols-12">
         <h2 className="display-1 lg:col-span-6">{title}</h2>
         <p className={`prose-lead ${body} lg:col-span-5 lg:col-start-8 lg:pt-1`}>
@@ -68,50 +69,64 @@ export function RangePreview() {
   const lead = [...ODOUR_PRODUCTS.slice(0, 3), ...CLEANING_PRODUCTS.slice(0, 3)];
 
   return (
-    <section className="gutter measure-wide section-y">
+    <section className="gutter measure-wide section-y-lg">
       <Reveal>
         <PreviewHead
           label="The range"
-          meta={`${ODOUR_PRODUCTS.length + CLEANING_PRODUCTS.length} products`}
+          meta={
+            <>
+              <Counter to={ODOUR_PRODUCTS.length + CLEANING_PRODUCTS.length} />{" "}
+              products
+            </>
+          }
           title="A product for the smell you actually have."
           standfirst="The old approach sells one fragrance for everything. Leocym is built the other way round — a specific formulation for each specific source."
         />
       </Reveal>
 
-      <Reveal delay={70}>
-        <ul className="mt-10 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
-          {lead.map((p) => (
-            <li key={p.slug}>
-              <Link href="/products" className="group block">
-                <div
-                  className="rounded-plate plate-depth lift overflow-hidden"
-                  style={{ backgroundColor: p.accent }}
-                >
-                  <Image
-                    src={p.image}
-                    alt=""
-                    width={900}
-                    height={928}
-                    sizes="(min-width: 1024px) 15vw, (min-width: 640px) 30vw, 46vw"
-                    className="h-auto w-full scale-110 transition-transform duration-(--dur-slow) ease-brand group-hover:scale-[1.03]"
-                  />
-                </div>
-                <div className="rule-t mt-3 pt-2">
-                  <h3 className="spec-value group-hover:text-flame-deep font-semibold transition-colors duration-(--dur-quick)">
-                    {p.name}
-                  </h3>
-                  <p className="spec-value text-ink-soft mt-0.5">
-                    {p.strapline}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </Reveal>
+      {/* The plates deal themselves out left to right. One observer for the
+          whole row: the parent is watched, the six children run their own
+          keyframe on an indexed delay. */}
+      {/* Six across at gap-5 put ~20px between plates whose captions run to
+          three lines, which is what made this row read as a wall. Three across
+          on a laptop and six only on a wide desktop, with the gaps roughly
+          doubled and the caption given its own space below the rule. */}
+      <Stagger
+        as="ul"
+        delay={70}
+        step={70}
+        variant="scale"
+        className="mt-14 grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 sm:gap-x-10 xl:grid-cols-6"
+      >
+        {lead.map((p) => (
+          <li key={p.slug}>
+            <Link href="/products" className="group block">
+              <div
+                className="rounded-plate plate-depth lift sheen overflow-hidden"
+                style={{ backgroundColor: p.accent }}
+              >
+                <Image
+                  src={p.image}
+                  alt=""
+                  width={900}
+                  height={928}
+                  sizes="(min-width: 1024px) 15vw, (min-width: 640px) 30vw, 46vw"
+                  className="h-auto w-full scale-110 transition-transform duration-(--dur-slow) ease-brand group-hover:scale-[1.03]"
+                />
+              </div>
+              <div className="rule-t mt-3 pt-2">
+                <h3 className="spec-value group-hover:text-flame-deep font-semibold transition-colors duration-(--dur-quick)">
+                  {p.name}
+                </h3>
+                <p className="spec-value text-ink-soft mt-0.5">{p.strapline}</p>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </Stagger>
 
       <Reveal delay={110}>
-        <div className="rule-t mt-10 flex flex-col gap-5 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="rule-t mt-14 flex flex-col gap-5 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="prose-body text-ink-deep/70 max-w-[52ch]">
             <strong className="font-semibold">
               {ODOUR_PRODUCTS.length} odour neutralisers
@@ -141,27 +156,38 @@ export function RangePreview() {
  */
 export function ScalePreview() {
   return (
-    <section className="bg-ink-black text-paper">
-      <div className="gutter measure-wide section-y">
+    /* `ink`, not `ink-black`. The site had three near-identical navies doing
+       dark duty and used the darkest of them for an ordinary mid-page band,
+       which meant the reader fell off a cream cliff into near-black halfway
+       down the homepage. `ink-black` is now reserved for the footer, where the
+       page is actually meant to end. */
+    <section className="bg-ink text-paper band">
+      <div className="gutter measure-wide section-y-lg">
         <Reveal>
           <PreviewHead
             label="Industrial & large scale"
             tone="paper"
-            meta={`${AREAS_COUNT} environments`}
+            meta={
+              <>
+                <Counter to={AREAS_COUNT} /> environments
+              </>
+            }
             title="The same technology that treats a landfill treats a washroom."
             standfirst="Across Europe, on water treatment plants, landfills, refineries and metro tunnelling. The chemistry does not change for smaller jobs — only the equipment that delivers it."
           />
         </Reveal>
 
-        <div className="mt-10 grid gap-x-14 gap-y-8 lg:grid-cols-12">
-          <Reveal delay={70} className="lg:col-span-6">
-            <ul className="rule-inv-t">
+        <div className="mt-14 grid gap-x-14 gap-y-12 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            {/* The five segments arrive one after another, which is the point:
+                the argument is the ACCUMULATION, not any single line of it. */}
+            <Stagger as="ul" delay={70} step={80} className="rule-inv-t">
               {INDUSTRIAL.map((seg) => (
                 <li
                   key={seg.slug}
-                  className="rule-inv-b flex items-center gap-4 py-4"
+                  className="rule-inv-b group hover:bg-paper/5 flex items-center gap-4 py-4 transition-colors duration-(--dur-base)"
                 >
-                  <span className="text-field-pale shrink-0">
+                  <span className="text-field-pale shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:scale-110">
                     <Icon name={seg.icon} size={24} />
                   </span>
                   <span className="plate-no nums text-field-pale w-6 shrink-0">
@@ -170,15 +196,22 @@ export function ScalePreview() {
                   <span className="display-3">{seg.title}</span>
                 </li>
               ))}
-            </ul>
-            <TextLink href="/for-business" tone="paper" className="mt-7">
-              Industrial and large-scale use
-            </TextLink>
-          </Reveal>
+            </Stagger>
+            <Reveal delay={140}>
+              <TextLink href="/for-business" tone="paper" className="mt-7">
+                Industrial and large-scale use
+              </TextLink>
+            </Reveal>
+          </div>
 
-          <Reveal delay={120} className="lg:col-span-6">
+          <Reveal variant="scale" delay={120} className="lg:col-span-6">
             <figure>
-              <div className="rounded-photo plate-depth-inv relative aspect-4/3 overflow-hidden">
+              {/* `parallax` drives the photograph off the scroll position
+                  itself where the browser supports scroll timelines, so the
+                  frame and its contents move at different rates as the section
+                  passes. No listener, no JavaScript, and no change at all in a
+                  browser that does not support it. */}
+              <div className="rounded-photo plate-depth-inv parallax relative aspect-4/3">
                 <Image
                   src={INDUSTRIAL[0].image}
                   alt="A waste water treatment plant — odour control in operation on site"
@@ -210,14 +243,11 @@ export function ScalePreview() {
  */
 export function OriginPreview() {
   return (
-    <section className="bg-paper-3">
-      <div className="gutter measure-wide section-y">
-        <div className="grid gap-x-14 gap-y-8 lg:grid-cols-12">
+    <section className="bg-paper-2 band">
+      <div className="gutter measure-wide section-y-lg">
+        <div className="grid gap-x-14 gap-y-10 lg:grid-cols-12">
           <Reveal className="lg:col-span-7">
-            <div className="rule-t flex items-baseline gap-4 pt-3">
-              <span className="plate-no text-ink-soft">Origin</span>
-              <Petal size={13} strokeWidth={2.4} className="text-ink-soft" />
-            </div>
+            <SectionLabel className="rule-t pt-3">Origin</SectionLabel>
             <h2 className="display-1 mt-5">
               {SITE.origin.city}, {SITE.origin.country}.
             </h2>
@@ -235,13 +265,14 @@ export function OriginPreview() {
           </Reveal>
 
           <Reveal
+            variant="right"
             delay={100}
             className="lg:col-span-4 lg:col-start-9 lg:pt-10"
           >
             <figure className="flex items-start gap-6 lg:block">
               <FranceMap
                 className="text-ink-soft h-32 w-auto shrink-0 lg:h-40"
-                markerClassName="text-flame"
+                markerClassName="text-flame-deep"
               />
               <figcaption className="spec-label text-ink-soft mt-3 max-w-[18ch] lg:mt-4">
                 Douai, in the north of France

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageTransition } from "@/components/PageTransition";
 import { Origin } from "@/components/sections/Origin";
 import { Heritage } from "@/components/sections/Heritage";
 import { Science } from "@/components/sections/Science";
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
  */
 export default function BrandStoryPage() {
   return (
-    <>
+    <PageTransition>
       <PageHero
         label="Brand story"
         title="A French company built around one refusal."
@@ -59,6 +60,6 @@ export default function BrandStoryPage() {
       />
 
       <Closing />
-    </>
+    </PageTransition>
   );
 }

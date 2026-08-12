@@ -1,5 +1,5 @@
 import { SITE } from "@/content/site";
-import { Petal, SpecRow, Reveal } from "@/components/ui";
+import { SectionLabel, SpecRow, Reveal, Stagger } from "@/components/ui";
 import { FranceMap } from "@/components/Icon";
 
 /**
@@ -15,14 +15,11 @@ import { FranceMap } from "@/components/Icon";
  */
 export function Origin() {
   return (
-    <section id="origin" className="bg-paper-3">
-      <div className="gutter measure-wide section-y">
+    <section id="origin" className="bg-paper-2 band">
+      <div className="gutter measure-wide section-y-lg">
         <div className="grid grid-cols-1 gap-x-14 gap-y-10 lg:grid-cols-12">
           <Reveal className="lg:col-span-7 lg:col-start-2">
-            <div className="rule-t flex items-baseline gap-4 pt-3">
-              <span className="plate-no text-ink-soft">Origin</span>
-              <Petal size={13} strokeWidth={2.4} className="text-ink-soft" />
-            </div>
+            <SectionLabel className="rule-t pt-3">Origin</SectionLabel>
 
             {/* The map rather than a flag. A flag says "French brand" and stops
                 there; the map says WHERE, which is the actual point of this
@@ -34,7 +31,7 @@ export function Origin() {
               <figure className="hidden shrink-0 sm:block">
                 <FranceMap
                   className="text-ink-soft h-28 w-auto"
-                  markerClassName="text-flame"
+                  markerClassName="text-flame-deep"
                 />
                 <figcaption className="spec-label text-ink-soft mt-1.5 text-center">
                   Douai
@@ -64,9 +61,14 @@ export function Origin() {
 
             <figure className="mt-10">
               <blockquote>
-                <p className="signature text-ink">
-                  An odour-free and hygienic world.
-                </p>
+                {/* The site's one use of the script face, and the one place a
+                    wipe is the right gesture: a signature is WRITTEN, so it
+                    arrives left to right rather than fading up as a block. */}
+                <Reveal variant="mask" duration={1200} delay={120}>
+                  <p className="signature text-ink">
+                    An odour-free and hygienic world.
+                  </p>
+                </Reveal>
               </blockquote>
               <figcaption className="spec-label text-ink-soft mt-4">
                 The Leocym mission
@@ -74,11 +76,13 @@ export function Origin() {
             </figure>
           </Reveal>
 
-          <Reveal as="aside" delay={110} className="lg:col-span-3 lg:col-start-10 lg:pt-16">
-            <h3 className="spec-label text-ink-soft rule-b pb-3">
-              At a glance
-            </h3>
-            <dl>
+          <aside className="lg:col-span-3 lg:col-start-10 lg:pt-16">
+            <Reveal variant="right" delay={110}>
+              <h3 className="spec-label text-ink-soft rule-b pb-3">
+                At a glance
+              </h3>
+            </Reveal>
+            <Stagger as="dl" delay={160} step={70}>
               <SpecRow
                 label="Headquarters"
                 value={`${SITE.origin.city}, ${SITE.origin.country}`}
@@ -89,8 +93,8 @@ export function Origin() {
               />
               <SpecRow label="In India" value="Available now" />
               <SpecRow label="Enquiries" value={SITE.contact.email} />
-            </dl>
-          </Reveal>
+            </Stagger>
+          </aside>
         </div>
       </div>
     </section>

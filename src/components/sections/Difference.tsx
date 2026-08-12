@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Petal, Reveal } from "@/components/ui";
+import { Reveal, SectionLabel } from "@/components/ui";
 
 /**
  * Section 3 - Neutralise vs Mask. THE SHOWPIECE.
@@ -69,15 +69,16 @@ export function Difference() {
          whole site rests on, so it gets the reader's full view with nothing
          else competing for attention. Below lg it flows naturally — pinning a
          height on a phone would crush the diagram and the copy together. */
-      className="bg-ink text-paper relative overflow-hidden lg:fits-view"
+      className="bg-ink text-paper band relative overflow-hidden lg:fits-view"
     >
-      <div className="gutter measure-wide section-y w-full">
+      {/* The one section that keeps the tight rhythm, because it trades on
+          filling exactly one screen. Everywhere else the band padding opened
+          up; here it would push the diagram and the copy out of the view the
+          section exists to own. */}
+      <div className="gutter measure-wide section-y-tight w-full">
         {/* ---- Opening ---- */}
         <Reveal as="header" className="rule-inv-t block pt-3">
-          <div className="flex items-baseline gap-4">
-            <span className="plate-no text-paper/65">The difference</span>
-            <Petal size={13} strokeWidth={2.4} className="text-paper/60" />
-          </div>
+          <SectionLabel tone="paper">The difference</SectionLabel>
           <div className="mt-4 grid gap-8 lg:grid-cols-12">
             <h2 className="display-1 lg:col-span-7">
               Covering a smell and removing one are not the same thing.
@@ -92,13 +93,29 @@ export function Difference() {
         {/* ---- The control ----
              A real ARIA radiogroup: roving tabindex, arrow-key navigation and
              Home/End. Declaring role="radio" without these would claim a
-             keyboard contract the component does not honour. */}
-        <div
+             keyboard contract the component does not honour.
+
+             The selected ground is ONE element that slides between the two
+             halves rather than two backgrounds switching on and off. That is
+             what makes the control read as a switch being thrown — the same
+             object moving — instead of as two buttons changing colour, and it
+             is the small piece of motion that tells the reader this thing is
+             interactive before they have touched it. */}
+        <Reveal
+          delay={120}
           role="radiogroup"
           aria-label="Compare how each approach works"
           onKeyDown={onGroupKeyDown}
-          className="rule-inv-all mt-6 inline-grid grid-cols-2 gap-0"
+          className="rule-inv-all relative mt-6 inline-grid grid-cols-2 gap-0 overflow-hidden"
         >
+          <span
+            aria-hidden="true"
+            className={`absolute inset-y-0 left-0 w-1/2 transition-[transform,background-color] duration-(--dur-base) ease-brand ${
+              masked
+                ? "bg-odour-deep translate-x-0"
+                : "bg-clean-deep translate-x-full"
+            }`}
+          />
           {MODES.map((m) => {
             const active = mode === m;
             return (
@@ -110,19 +127,15 @@ export function Difference() {
                 aria-checked={active}
                 tabIndex={active ? 0 : -1}
                 onClick={() => setMode(m)}
-                className={`ui-text px-5 py-3 transition-colors duration-(--dur-quick) sm:px-8 ${
-                  active
-                    ? m === "mask"
-                      ? "bg-odour-deep text-paper"
-                      : "bg-clean-deep text-paper"
-                    : "text-paper/70 hover:text-paper"
+                className={`ui-text relative z-10 px-5 py-3 transition-colors duration-(--dur-base) sm:px-8 ${
+                  active ? "text-paper" : "text-paper/70 hover:text-paper"
                 }`}
               >
                 {COPY[m].label}
               </button>
             );
           })}
-        </div>
+        </Reveal>
 
         {/* The state change is announced, so a screen-reader user is told what
             switched rather than being left to discover it. */}
@@ -132,33 +145,46 @@ export function Difference() {
 
         {/* ---- The stage ---- */}
         <div className="mt-6 grid grid-cols-1 gap-x-12 gap-y-8 lg:grid-cols-12">
-          <figure className="lg:col-span-6">
-            <div className="rule-inv-all bg-ink-black/40 p-3 sm:p-4">
-              <Diagram masked={masked} />
-            </div>
-            <figcaption className="spec-label text-paper/65 mt-2">
-              Diagram - how each approach meets the odour source
-            </figcaption>
-          </figure>
+          <Reveal variant="scale" delay={160} className="lg:col-span-6">
+            <figure>
+              <div className="rule-inv-all bg-ink-black/40 p-3 sm:p-4">
+                <Diagram masked={masked} />
+              </div>
+              <figcaption className="spec-label text-paper/65 mt-2">
+                Diagram - how each approach meets the odour source
+              </figcaption>
+            </figure>
+          </Reveal>
 
-          <div className="lg:col-span-6 lg:pt-1">
-            <p
-              className={`spec-label ${masked ? "text-odour-lite" : "text-clean-lite"}`}
+          {/* Keyed on the mode, so switching REPLACES this column rather than
+              editing it in place: the four parts come back in reading order
+              over about a third of a second. Editing the words underneath a
+              reader's eye is how a state change gets missed entirely. */}
+          <Reveal delay={200} className="lg:col-span-6 lg:pt-1">
+            <div
+              key={mode}
+              data-stagger
+              data-shown
+              style={{ "--stagger-step": "70ms" } as React.CSSProperties}
             >
-              {copy.label}
-            </p>
-            <h3 className="display-2 mt-4">{copy.title}</h3>
-            <p className="prose-body text-paper/75 mt-5">{copy.body}</p>
-            <p
-              className={`display-3 mt-6 border-l-2 pl-5 ${
-                masked
-                  ? "border-odour text-paper/90"
-                  : "border-clean text-paper"
-              }`}
-            >
-              {copy.note}
-            </p>
-          </div>
+              <p
+                className={`spec-label ${masked ? "text-odour-lite" : "text-clean-lite"}`}
+              >
+                {copy.label}
+              </p>
+              <h3 className="display-2 mt-4">{copy.title}</h3>
+              <p className="prose-body text-paper/75 mt-5">{copy.body}</p>
+              <p
+                className={`display-3 mt-6 border-l-2 pl-5 ${
+                  masked
+                    ? "border-odour text-paper/90"
+                    : "border-clean text-paper"
+                }`}
+              >
+                {copy.note}
+              </p>
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -268,7 +294,33 @@ function Diagram({ masked }: { masked: boolean }) {
           </g>
         ))}
 
-        {/* neutralising action at the source - neutralise state only */}
+        {/* THE PLUME. Only in the masked state, and this is the one piece of
+            motion on the site that is doing the argument rather than dressing
+            it: the whole point of this diagram is that odour keeps ARRIVING
+            while the fragrance sits above it, and a still picture asked the
+            reader to imagine the part that matters. In the neutralised state
+            nothing rises, because nothing is rising.
+
+            Each particle is offset by `--i` so they do not pulse in unison,
+            which would read as a loading indicator rather than as a source. */}
+        {masked
+          ? particles.map((p, i) => (
+              <circle
+                key={`plume-${i}`}
+                cx={p.x + p.drift * 0.5}
+                cy="252"
+                r="5"
+                fill="var(--color-odour)"
+                className="odour-plume"
+                style={{ "--i": i } as React.CSSProperties}
+              />
+            ))
+          : null}
+
+        {/* neutralising action at the source - neutralise state only.
+            The band breathes very slowly: the treatment is working, continuously,
+            at the source, and stillness here would read as "finished" when the
+            argument is that it holds. */}
         <g className={t} opacity={masked ? 0 : 1}>
           <rect
             x="40"
@@ -277,6 +329,7 @@ function Diagram({ masked }: { masked: boolean }) {
             height="42"
             fill="var(--color-clean)"
             opacity="0.28"
+            className={masked ? "" : "band-live"}
           />
           <line
             x1="40"

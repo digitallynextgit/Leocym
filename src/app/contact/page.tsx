@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageTransition } from "@/components/PageTransition";
 import { EnquiryForm } from "@/components/sections/EnquiryForm";
 import { Questions } from "@/components/sections/Questions";
 import { NextUp, PageHero, SpecRow } from "@/components/ui";
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
  */
 export default function ContactPage() {
   return (
-    <>
+    <PageTransition>
       <FaqData />
 
       <PageHero
@@ -126,7 +127,7 @@ export default function ContactPage() {
           },
         ]}
       />
-    </>
+    </PageTransition>
   );
 }
 

@@ -1,6 +1,6 @@
 import { DELIVERY, INTENSITY_SCALE, SCIENCE_NOTE } from "@/content/misc";
 import { MECHANISM } from "@/content/claims";
-import { Petal, Reveal, TextLink } from "@/components/ui";
+import { Reveal, SectionLabel, Stagger, TextLink } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 
 /**
@@ -23,14 +23,11 @@ import { Icon } from "@/components/Icon";
  */
 export function Science() {
   return (
-    <section id="science" className="bg-paper-2">
-      <div className="gutter measure-wide section-y">
+    <section id="science" className="bg-paper-2 band">
+      <div className="gutter measure-wide section-y-lg">
         <Reveal>
           <header className="rule-t pt-3">
-            <div className="flex items-baseline gap-4">
-              <span className="plate-no text-ink-soft">The science</span>
-              <Petal size={13} strokeWidth={2.4} className="text-ink-soft" />
-            </div>
+            <SectionLabel>The science</SectionLabel>
             <div className="mt-4 grid gap-6 lg:grid-cols-12">
               <h2 className="display-1 lg:col-span-6">
                 A smell is a compound, not an atmosphere.
@@ -65,11 +62,15 @@ export function Science() {
                 Chemistry only works where it lands. Each format exists because
                 a different kind of source needs reaching a different way.
               </p>
-              <ul className="mt-6 grid gap-x-8 gap-y-0 sm:grid-cols-2">
+              <Stagger
+                as="ul"
+                step={80}
+                className="mt-6 grid gap-x-8 gap-y-0 sm:grid-cols-2"
+              >
                 {DELIVERY.map((d) => (
-                  <li key={d.mode} className="rule-t py-4">
+                  <li key={d.mode} className="group rule-t py-4">
                     <h3 className="display-3 flex items-center gap-2.5">
-                      <span className="text-flame-deep shrink-0">
+                      <span className="text-flame-deep shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:scale-110">
                         <Icon name={d.icon} size={26} />
                       </span>
                       {d.mode}
@@ -78,7 +79,7 @@ export function Science() {
                     <p className="spec-label text-ink-soft mt-2.5">{d.where}</p>
                   </li>
                 ))}
-              </ul>
+              </Stagger>
             </div>
           </div>
         </Reveal>
@@ -95,11 +96,18 @@ export function Science() {
                 on a five-point intensity scale, by trained assessors, on site.
               </p>
 
-              <ol className="mt-6 grid grid-cols-1 gap-px sm:grid-cols-5">
+              {/* The scale is read left to right, so it arrives left to right —
+                  which is also the direction severity increases in. */}
+              <Stagger
+                as="ol"
+                step={70}
+                variant="left"
+                className="mt-6 grid grid-cols-1 gap-px sm:grid-cols-5"
+              >
                 {INTENSITY_SCALE.map((s, i) => (
                   <li
                     key={s.n}
-                    className="rule-all bg-paper rounded-sm p-4"
+                    className="rule-all bg-paper hover:bg-paper-1 rounded-sm p-4 transition-[background-color,transform] duration-(--dur-base) ease-brand hover:-translate-y-1"
                     style={{
                       // the scale reads as a gradient of severity, left to right
                       borderColor:
@@ -116,7 +124,7 @@ export function Science() {
                     </span>
                   </li>
                 ))}
-              </ol>
+              </Stagger>
 
               <p className="prose-body text-ink-deep/70 measure-text mt-6">
                 {SCIENCE_NOTE}

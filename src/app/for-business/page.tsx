@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageTransition } from "@/components/PageTransition";
 import { Areas } from "@/components/sections/Areas";
 import { Method } from "@/components/sections/Method";
 import { Industrial } from "@/components/sections/Industrial";
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
  */
 export default function ForBusinessPage() {
   return (
-    <>
+    <PageTransition>
       <PageHero
         label="For business"
         title="Odour is a licence condition before it is a nuisance."
@@ -68,6 +69,6 @@ export default function ForBusinessPage() {
         title="Send us the site, not just the smell."
         standfirst="Photographs, the layout, what has been tried and what it has to pass. Large-scale work starts with an assessment, and the assessment starts with that."
       />
-    </>
+    </PageTransition>
   );
 }

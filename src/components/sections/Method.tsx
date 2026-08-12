@@ -1,5 +1,5 @@
 import { PROCEDURE } from "@/content/misc";
-import { SectionHead, Reveal } from "@/components/ui";
+import { SectionHead, Reveal, Stagger } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 
 /**
@@ -13,8 +13,8 @@ import { Icon } from "@/components/Icon";
  */
 export function Method() {
   return (
-    <section id="method" className="bg-paper-2">
-      <div className="gutter measure-wide section-y">
+    <section id="method" className="bg-paper-2 band">
+      <div className="gutter measure-wide section-y-lg">
         <div className="grid grid-cols-1 gap-x-14 gap-y-8 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-24">
@@ -28,23 +28,26 @@ export function Method() {
             </div>
           </div>
 
-          <ol className="lg:col-span-7">
+          {/* A procedure is a SEQUENCE, so the entrance is a sequence: the six
+              steps arrive in the order they are carried out, one observer for
+              the whole list rather than six. */}
+          <Stagger as="ol" variant="left" step={80} className="lg:col-span-7">
             {PROCEDURE.map((step, i) => (
-              <Reveal
-                as="li"
+              <li
                 key={step.n}
-                delay={i * 55}
-                className={`grid grid-cols-[2.25rem_1fr] gap-x-4 py-2.5 sm:grid-cols-[3rem_1fr] ${
+                className={`group grid grid-cols-[2.25rem_1fr] gap-x-4 py-2.5 sm:grid-cols-[3rem_1fr] ${
                   i === 0 ? "rule-t" : ""
                 } rule-b`}
               >
                 {/* The number keeps its own column so the spine stays straight
                     down the list. The icon travels with the title instead, the
                     same way the delivery modes are set in Science. */}
-                <span className="plate-no nums text-ink-soft pt-2">{step.n}</span>
+                <span className="plate-no nums text-ink-soft group-hover:text-flame-deep pt-2 transition-colors duration-(--dur-quick)">
+                  {step.n}
+                </span>
                 <div>
                   <h3 className="display-3 flex items-center gap-2.5">
-                    <span className="text-flame-deep shrink-0">
+                    <span className="text-flame-deep shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:scale-110">
                       <Icon name={step.icon} size={26} />
                     </span>
                     {step.title}
@@ -53,9 +56,9 @@ export function Method() {
                     {step.body}
                   </p>
                 </div>
-              </Reveal>
+              </li>
             ))}
-          </ol>
+          </Stagger>
         </div>
       </div>
     </section>

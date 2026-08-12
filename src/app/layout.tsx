@@ -87,6 +87,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${lora.variable} ${montserrat.variable} ${openSans.variable} ${italianno.variable} h-full`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Sets the `js` flag BEFORE the first paint.
+            Every scroll entrance in globals.css is gated on `.js`, which is
+            what keeps the site fully readable with JavaScript off - the hidden
+            state is never applied if this never runs. It used to be set from
+            an effect inside <Reveal>, which meant the browser painted the
+            content, then hid it, then faded it back in: a flash on every load.
+            Two lines of inline script in the document remove the flash
+            entirely, and there is nothing here to hydrate. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.add("js")`,
+          }}
+        />
         <a
           href="#content"
           className="ui-text bg-ink text-paper sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-70 focus:px-5 focus:py-3"

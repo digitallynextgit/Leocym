@@ -10,7 +10,7 @@ import {
   type Family,
   type Product,
 } from "@/content/products";
-import { PlateNo, SpecRow } from "@/components/ui";
+import { PlateNo, SpecRow, Stagger } from "@/components/ui";
 
 /**
  * The catalogue grid, on /products.
@@ -104,8 +104,20 @@ export function Range() {
         ))}
       </div>
 
-      {/* ---- Plates ---- */}
-      <ul className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-4">
+      {/* ---- Plates ----
+           Keyed on the current filter, so changing family or problem REMOUNTS
+           the grid and the cascade runs again. That is the whole point: the
+           filter is the one control on this page, and re-dealing the plates is
+           what tells the reader it did something. Without it, twenty-six items
+           silently become four and the change is easy to miss entirely. */}
+      <Stagger
+        as="ul"
+        key={`${family}-${problem ?? "all"}`}
+        variant="scale"
+        step={45}
+        duration={520}
+        className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:grid-cols-4"
+      >
         {shown.map((p, i) => (
           <li
             key={p.slug}
@@ -121,7 +133,7 @@ export function Range() {
             />
           </li>
         ))}
-      </ul>
+      </Stagger>
 
       {shown.length === 0 ? (
         <p className="prose-body text-ink-soft mt-10">
@@ -150,10 +162,10 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`spec-value px-3 py-1.5 transition-colors duration-(--dur-quick) ${
+      className={`spec-value px-3 py-1.5 transition-[color,background-color,border-color,transform] duration-(--dur-base) ease-brand ${
         active
-          ? "bg-ink text-paper"
-          : "rule-all text-ink-deep hover:border-ink hover:bg-paper-2"
+          ? "bg-ink text-paper scale-[1.04]"
+          : "rule-all text-ink-deep hover:border-ink hover:bg-paper-2 hover:-translate-y-0.5"
       }`}
     >
       {children}
@@ -178,7 +190,7 @@ function Plate({
       aria-label={`${product.name} - ${product.strapline}. Open details.`}
     >
       <div
-        className="rounded-[20%] plate-depth lift overflow-hidden"
+        className="plate-depth lift sheen overflow-hidden rounded-[20%]"
         style={{ backgroundColor: product.accent }}
       >
         <Image
@@ -269,8 +281,13 @@ function Detail({
       className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center"
       role="presentation"
     >
+      {/* The scrim fades and the panel rises from the edge it is anchored to -
+          up from the bottom on a phone, out of the page on a desktop. A dialog
+          that simply exists reads as a page change; one that arrives from
+          somewhere reads as a layer over the grid the reader was just in, and
+          they keep their place. */}
       <div
-        className="bg-ink-black/55 absolute inset-0"
+        className="bg-ink-black/55 dialog-scrim absolute inset-0"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -280,7 +297,7 @@ function Detail({
         aria-modal="true"
         aria-labelledby={`d-${product.slug}`}
         tabIndex={-1}
-        className="bg-paper scroll-slim relative max-h-[92dvh] w-full max-w-4xl overflow-y-auto md:h-[min(92dvh,42rem)] md:overflow-hidden"
+        className="bg-paper scroll-slim dialog-panel relative max-h-[92dvh] w-full max-w-4xl overflow-y-auto md:h-[min(92dvh,42rem)] md:overflow-hidden"
       >
         {/* TWO INDEPENDENT PANELS on desktop.
             The dialog owns the height; neither column decides it. That is what
@@ -324,7 +341,7 @@ function Detail({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="spec-label text-ink-soft hover:text-flame transition-colors"
+                  className="spec-label text-ink-soft hover:text-flame-deep transition-colors duration-(--dur-quick)"
                 >
                   Close
                 </button>

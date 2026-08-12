@@ -4,48 +4,88 @@
    LEOCYM INDIA - BRAND TOKEN LAYER
    Direction: "French technical apothecary" - editorial type on a spec-sheet grid.
 
-   Every colour below is either sampled from the real Leocym catalogue PDF or
-   taken verbatim from the Rudione Brand Guidelines. Nothing here is invented.
+   SOURCE OF TRUTH. Every hue below is sampled from the real Leocym lockup in
+   public/brand/, which is the only colour artefact this repository actually
+   contains. The Marketing Strategy defines positioning, channels, claims and
+   logo USAGE - it specifies no palette, no typeface and no visual identity, so
+   nothing here can be attributed to it. What it does give is the brief, in
+   §3.5: professional, trustworthy, expert and purposeful; premium in quality
+   without feeling expensive or out of reach. That sentence is what the ground
+   below is tuned against.
+
+   Measured off the lockup: indigo #303078, the leaf running green #54a848 ->
+   orange #f07824 -> red #e43c24. The working tokens sit within ~3% of those,
+   which is the difference between a screen sample and the printed values in
+   the guidelines, and is not perceptible side by side.
+
+   GROUND, REWORKED. The paper family used to be a heavy peach (#fef4e8 /
+   #f9ead9 / #f2ddc6). Three problems, all visible at a glance:
+
+     1. At that saturation the ground is itself an orange, so the flame accent
+        had nothing to sit against - the "10% accent" dissolved into the 60%
+        ground and the whole page read as one warm wash.
+     2. The three steps were 2-4% apart in lightness, so a banded section like
+        the ticker looked like a rendering artefact rather than a surface.
+     3. Warm-and-soft reads homely. The brief asks for professional, expert and
+        premium, which wants a calm ground and a dominant indigo.
+
+   The family below keeps the warmth - it is still paper, never #fff and never
+   zinc - but drops roughly two thirds of the chroma and spaces the steps far
+   enough apart that each one reads as a distinct surface.
 
    Discipline: 60 paper / 30 indigo / 10 flame. Green and red are SEMANTIC ONLY
-   (clean vs odour) and never decorative. No gradients. No purple. No zinc.
+   (clean vs odour) and never decorative. No purple. No zinc.
    ========================================================================== */
 
 @theme {
-  /* ---- Ground: warm paper. Never #fff, never zinc. --------------------- */
-  --color-paper: #fef4e8;
-  --color-paper-1:#ffffff; /* sampled from the catalogue page ground */
-  --color-paper-2: #f9ead9;
-  --color-paper-3: #f2ddc6;
-  --color-paper-edge: #e6cdb0;
+  /* ---- Ground: warm paper, calm enough to be a ground. ------------------
+     Hue held at ~38deg so it stays recognisably the same family as the old
+     cream; chroma cut hard; steps opened to ~4% lightness apart so a banded
+     section is legible as a band. */
+  --color-paper: #fbf8f2; /* the page */
+  --color-paper-1: #ffffff; /* lifted surfaces: plates, panels */
+  --color-paper-2: #f3eee4; /* a band, clearly a step down */
+  --color-paper-3: #e8e1d3; /* the deepest paper, for a full-width block */
+  --color-paper-edge: #d9d0be;
 
-  /* ---- Ink: Leocym Indigo, the dominant colour ------------------------- */
-  --color-ink: #282864; /* Guidelines: Leocym Indigo, Main */
+  /* ---- Ink: Leocym Indigo, the dominant colour -------------------------
+     `ink` is the brand indigo and now does most of the dark-ground work.
+     `ink-deep` is the step used where a section needs to read as heavier
+     without falling off a cliff, and `ink-black` is reserved for the footer -
+     the one place on the site where the page is genuinely meant to end. */
+  --color-ink: #282864; /* Guidelines: Leocym Indigo, Main (lockup: #303078) */
   --color-ink-deep: #1c1c46; /* Dark */
-  --color-ink-black: #12122d; /* Darkest */
+  --color-ink-black: #12122d; /* Darkest - footer only */
   /* Guidelines list Leocym Indigo Light as #8989AA, but that measures 2.56:1 on
      our darkest paper - it fails WCAG AA for the secondary text it is meant for.
-     Darkened to the nearest indigo that clears 4.5:1 on all three paper grounds
-     (4.50 / 5.03 / 5.46). Same hue family, legible. */
+     Darkened to the nearest indigo that clears 4.5:1 on every paper ground.
+     Re-measured after the ground change: 5.60 / 5.93 / 5.13 / 4.56. */
   --color-ink-soft: #5e608e;
   --color-ink-faint: #d4d4e0; /* Lightest - borders and rules only, never text */
 
-  /* ---- Flame: the ONE sharp accent. ~10% of the page, never more. ------ */
-  --color-flame: #f07814; /* Leocym Orange, Main - grounds only, never text on light */
-  --color-flame-deep: #96490b; /* text-safe on all paper grounds: 5.94 / 5.47 / 4.90 */
-  --color-flame-pale: #fce4d0;
+  /* ---- Flame: the ONE sharp accent. ~10% of the page, never more.
+     It only earns that billing now that the ground has stopped being orange
+     itself. `flame` is for grounds; `flame-deep` is the text-safe variant.
+     Ratios below are re-measured against the NEW paper family. */
+  --color-flame: #f07814; /* Leocym Orange, Main (lockup: #f07824) */
+  --color-flame-deep: #96490b; /* on paper/1/2/3: 6.09 / 6.45 / 5.58 / 4.96 */
+  --color-flame-pale: #fbe6d3;
 
   /* ---- Semantic signals. Meaning, not decoration. ----------------------
      Each has a light variant for dark grounds and a deep variant for use as a
-     button ground under paper-coloured text. Contrast checked, not guessed. */
-  --color-odour: #dc3c14; /* Leocym Red - "the problem" */
-  --color-odour-deep: #c23411; /* ground under paper text: 5.09 */
+     button ground under paper-coloured text. Contrast measured, not guessed -
+     see the re-check after the ground change. */
+  --color-odour: #dc3c14; /* Leocym Red - "the problem" (lockup: #e43c24) */
+  /* Was #c23411, which measured 4.26 on the new deepest paper and so failed AA
+     for the form's field errors. Darkened to the nearest red that clears 4.5
+     on ALL FOUR grounds: 5.63 / 5.97 / 5.16 / 4.59. */
+  --color-odour-deep: #ba300f;
   --color-odour-lite: #ec947e; /* Leocym Red Light - on ink: 5.77 */
-  --color-odour-pale: #f8d8d0;
-  --color-clean: #50a03c; /* Leocym Green - "neutralised / verified" */
-  --color-clean-deep: #38702a; /* ground under paper text: 5.49 */
+  --color-odour-pale: #f7d9d1;
+  --color-clean: #50a03c; /* Leocym Green - "neutralised" (lockup: #54a848) */
+  --color-clean-deep: #38702a; /* on paper/1/2/3: 5.63 / 5.97 / 5.16 / 4.59 */
   --color-clean-lite: #9fcb94; /* Leocym Green Light - on ink: 7.25 */
-  --color-clean-pale: #dcecd8;
+  --color-clean-pale: #dbead6;
 
   /* ---- Field: the catalogue's lavender, for large calm blocks ---------- */
   --color-field: #a6a2b9; /* sampled from the catalogue blob */
@@ -75,11 +115,16 @@
      nav panel. Change it here and everything stays in register. ---------- */
   --header-h: 5.25rem;
 
-  /* ---- Motion language: one easing, three durations -------------------- */
+  /* ---- Motion language: one easing, three durations --------------------
+     `--ease-brand` is the house curve: a fast start that settles rather than
+     bouncing. `--ease-out-soft` is for anything that travels a long way and
+     has to arrive without a stop. Nothing on this site uses a spring. */
   --ease-brand: cubic-bezier(0.32, 0.72, 0.28, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-quick: 140ms;
   --dur-base: 320ms;
   --dur-slow: 640ms;
+  --dur-long: 900ms;
 }
 
 /* ============================================================================
@@ -215,69 +260,863 @@ main[id] {
   line-height: 1.62;
 }
 
-/* One section rhythm, applied everywhere, so vertical space is a decision made
-   in one place rather than a py-* guess repeated twelve times.
+/* ---------------------------------------------------------------------------
+   SECTION RHYTHM
 
-   It scales with the VIEWPORT HEIGHT, not just the width. On a short laptop
-   screen the padding contracts so the section still fits in one view; on a tall
-   display it opens back up to the full editorial breathing room. A fixed value
-   can only be right for one screen height. */
+   One decision, made here, rather than a py-* guess repeated twelve times.
+
+   THIS WAS THE SINGLE BIGGEST FAULT ON THE PAGE. The old value was
+   `clamp(1.35rem, 3.6vh, 3.25rem)` - a maximum of 52px of padding above and
+   below a full-width band. Two of those meet at every section boundary, so the
+   most air the design could ever put between the end of one argument and the
+   start of the next was about 100px on a 1440px-wide page, and on a short
+   laptop it collapsed to 43px. Every band ran into the next one and the whole
+   page read as a single undifferentiated column of stuff.
+
+   It was tuned that tight to keep sections inside one viewport. That is the
+   wrong thing to optimise for: a section that FITS but cannot BREATHE just
+   looks cramped in one screen instead of two. Only the sections that genuinely
+   trade on filling the view - the Difference showpiece - need the tight value,
+   and they now ask for it by name.
+
+   Still scaled against viewport HEIGHT as well as width, so a tall display
+   opens up and a short one does not waste half the screen on margin.
+   --------------------------------------------------------------------------- */
+
+/* The standard band. */
 @utility section-y {
-  padding-block: clamp(1.35rem, 3.6vh, 3.25rem);
+  padding-block: clamp(3.5rem, 8vh, 7rem);
+}
+
+/* For a band that has to carry real weight - the closing, the origin - and for
+   the hand-off between two dark sections, where the eye needs more room to
+   register that something changed. */
+@utility section-y-lg {
+  padding-block: clamp(4.5rem, 11vh, 9.5rem);
+}
+
+/* Only for sections that are deliberately sized to one screen. */
+@utility section-y-tight {
+  padding-block: clamp(1.75rem, 4.5vh, 3.5rem);
 }
 
 /* ============================================================================
    MOTION
 
-   Entrances are staggered on scroll, and interactive surfaces respond. All of
-   it is driven by one easing and three durations from @theme, and all of it is
-   switched off wholesale under prefers-reduced-motion (see the media query in
-   BASE above, which zeroes every animation and transition on the page).
+   One easing, four durations, and a small vocabulary of gestures that every
+   section draws from. The rule the site holds itself to has not changed: motion
+   has to be attributable. An entrance says a block has arrived. A drift says a
+   surface is live. The diagram moves because the mechanism it describes moves.
+   Nothing here animates only because it could.
 
-   The reveal is CSS-only, triggered by an IntersectionObserver that just adds
-   [data-shown]. No animation library, no layout thrash, nothing that blocks
-   paint — and content is fully visible with JavaScript disabled, because the
-   shown state is the default and the hidden state is only applied once the
-   observer is known to be running.
+   It is all CSS. The only JavaScript is a single shared IntersectionObserver
+   that flips one attribute per element, so nothing runs on scroll, nothing
+   thrashes layout and nothing blocks paint. `js` is set on <html> by a tiny
+   inline script in the document head, so the hidden state is applied before
+   first paint rather than after it — and with JavaScript off it is never
+   applied at all, leaving every block simply present.
+
+   Everything collapses under prefers-reduced-motion: the BASE media query
+   zeroes every animation and transition on the page, and the block at the foot
+   of this section explicitly restores the resting state of anything that would
+   otherwise be left mid-gesture or hidden.
    ========================================================================== */
 
-@utility reveal {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity var(--dur-slow) var(--ease-brand),
-    transform var(--dur-slow) var(--ease-brand);
+/* ---------------------------------------------------------------------------
+   1. REVEAL — the entrance.
+
+   `data-reveal` names the gesture, the observer adds `data-shown`, CSS does the
+   rest. `--rv-delay` staggers a group without needing a second observer, and
+   `--rv-dur` lets one element take longer than the house default.
+   --------------------------------------------------------------------------- */
+
+[data-reveal] {
+  transition-property: opacity, transform, filter, clip-path;
+  transition-duration: var(--rv-dur, var(--dur-slow));
+  transition-timing-function: var(--ease-out-soft);
+  transition-delay: var(--rv-delay, 0ms);
 }
 
-/* `js` is set on <html> by the observer, so no-JS users never see the hidden
-   state. Once revealed, [data-shown] wins. */
-.js .reveal:not([data-shown]) {
+.js [data-reveal]:not([data-shown]) {
   opacity: 0;
-  transform: translateY(18px);
 }
 
-.js .reveal-left:not([data-shown]) {
-  opacity: 0;
-  transform: translateX(-20px);
+.js [data-reveal="up"]:not([data-shown]) {
+  transform: translate3d(0, 24px, 0);
+}
+.js [data-reveal="left"]:not([data-shown]) {
+  transform: translate3d(-26px, 0, 0);
+}
+.js [data-reveal="right"]:not([data-shown]) {
+  transform: translate3d(26px, 0, 0);
+}
+.js [data-reveal="scale"]:not([data-shown]) {
+  transform: scale(0.955) translate3d(0, 16px, 0);
+}
+.js [data-reveal="blur"]:not([data-shown]) {
+  filter: blur(12px);
+  transform: translate3d(0, 14px, 0);
 }
 
-@utility reveal-left {
+/* The wipe. Used on headlines, where a fade reads as a fade and a wipe reads as
+   type being set. Opacity stays at 1 so the clip does the whole job; the shown
+   state insets NEGATIVE so descenders and italic overhang are never shaved.
+
+   The clip lives on an inner element that <Reveal> supplies, NOT on the
+   observed element — see the comment in Reveal.tsx: an observer measures the
+   target's clipped box, so clipping the target to zero makes it permanently
+   unable to intersect, and the content never appears at all. */
+[data-reveal="mask"] > [data-rv-mask] {
+  display: block;
+  clip-path: inset(-0.4em -0.4em -0.4em -0.4em);
+  transition-property: clip-path, transform;
+  transition-duration: var(--rv-dur, var(--dur-slow));
+  transition-timing-function: var(--ease-out-soft);
+  transition-delay: var(--rv-delay, 0ms);
+}
+.js [data-reveal="mask"]:not([data-shown]) {
   opacity: 1;
-  transform: none;
-  transition:
-    opacity var(--dur-slow) var(--ease-brand),
-    transform var(--dur-slow) var(--ease-brand);
+}
+.js [data-reveal="mask"]:not([data-shown]) > [data-rv-mask] {
+  clip-path: inset(0 0 110% 0);
+  transform: translate3d(0, 0.3em, 0);
 }
 
-/* Reveal-on-scroll is motion. If motion is declined, the content is simply
-   present from the start rather than popping in as you pass it.
-   This must sit AFTER the .reveal rules above — same specificity, so source
-   order decides, and an earlier copy loses. */
-@media (prefers-reduced-motion: reduce) {
-  .js .reveal:not([data-shown]),
-  .js .reveal-left:not([data-shown]) {
+/* ---------------------------------------------------------------------------
+   2. STAGGER — a cascade from ONE observer.
+
+   The parent is observed; the children run their own keyframe on a delay
+   indexed off `--i`. A list of twenty rows costs one observer entry, not twenty,
+   and the delay is declarative rather than a pile of setTimeouts.
+   --------------------------------------------------------------------------- */
+
+@keyframes rv-cascade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes rv-cascade-left {
+  from {
+    opacity: 0;
+    transform: translate3d(-22px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rv-cascade-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.js [data-stagger]:not([data-shown]) > * {
+  opacity: 0;
+}
+
+.js [data-stagger][data-shown] > * {
+  animation: rv-cascade-up var(--rv-dur, var(--dur-slow)) var(--ease-out-soft)
+    both;
+  /* The parent's own delay, plus one step per row. Both custom properties are
+     set on the parent and inherit; only `--i` is per child. */
+  animation-delay: calc(
+    var(--rv-delay, 0ms) + var(--stagger-step, 65ms) * var(--i, 0)
+  );
+}
+.js [data-stagger="left"][data-shown] > * {
+  animation-name: rv-cascade-left;
+}
+.js [data-stagger="scale"][data-shown] > * {
+  animation-name: rv-cascade-scale;
+}
+
+/* The index. Written out rather than computed, because CSS has no counter that
+   can be read into a calc(). Twenty-eight covers the longest list on the site
+   (twenty-seven areas of use) with one to spare. */
+[data-stagger] > *:nth-child(1) { --i: 0; }
+[data-stagger] > *:nth-child(2) { --i: 1; }
+[data-stagger] > *:nth-child(3) { --i: 2; }
+[data-stagger] > *:nth-child(4) { --i: 3; }
+[data-stagger] > *:nth-child(5) { --i: 4; }
+[data-stagger] > *:nth-child(6) { --i: 5; }
+[data-stagger] > *:nth-child(7) { --i: 6; }
+[data-stagger] > *:nth-child(8) { --i: 7; }
+[data-stagger] > *:nth-child(9) { --i: 8; }
+[data-stagger] > *:nth-child(10) { --i: 9; }
+[data-stagger] > *:nth-child(11) { --i: 10; }
+[data-stagger] > *:nth-child(12) { --i: 11; }
+[data-stagger] > *:nth-child(13) { --i: 12; }
+[data-stagger] > *:nth-child(14) { --i: 13; }
+[data-stagger] > *:nth-child(15) { --i: 14; }
+[data-stagger] > *:nth-child(16) { --i: 15; }
+[data-stagger] > *:nth-child(17) { --i: 16; }
+[data-stagger] > *:nth-child(18) { --i: 17; }
+[data-stagger] > *:nth-child(19) { --i: 18; }
+[data-stagger] > *:nth-child(20) { --i: 19; }
+[data-stagger] > *:nth-child(21) { --i: 20; }
+[data-stagger] > *:nth-child(22) { --i: 21; }
+[data-stagger] > *:nth-child(23) { --i: 22; }
+[data-stagger] > *:nth-child(24) { --i: 23; }
+[data-stagger] > *:nth-child(25) { --i: 24; }
+[data-stagger] > *:nth-child(26) { --i: 25; }
+[data-stagger] > *:nth-child(27) { --i: 26; }
+[data-stagger] > *:nth-child(n + 28) { --i: 27; }
+
+/* ---------------------------------------------------------------------------
+   3. ENTRANCE ON LOAD — for the fold, where an observer is the wrong tool.
+
+   Above the fold there is nothing to observe: the content is already in view
+   when the page paints. These run on load, sequenced with `--d`, so the hero
+   assembles itself instead of arriving all at once.
+   --------------------------------------------------------------------------- */
+
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes enter-wipe {
+  from {
+    clip-path: inset(0 0 110% 0);
+    transform: translate3d(0, 0.28em, 0);
+  }
+  to {
+    clip-path: inset(-0.4em -0.4em -0.4em -0.4em);
+    transform: none;
+  }
+}
+
+@keyframes enter-plate {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility enter {
+  animation: enter-up var(--dur-long) var(--ease-out-soft) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@utility enter-wipe {
+  animation: enter-wipe var(--dur-long) var(--ease-out-soft) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@utility enter-plate {
+  animation: enter-plate 1100ms var(--ease-out-soft) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* ---------------------------------------------------------------------------
+   DISCLOSURE — the questions accordion.
+
+   Native <details>, so the answers stay in the DOM, crawlable and quotable
+   whether or not they are open, which is the whole reason that section exists.
+   What was missing was the OPENING: content appearing instantly gives the
+   reader no idea where it came from.
+
+   `::details-content` plus `interpolate-size` is what finally makes a native
+   disclosure animate to its own height without JavaScript measuring it. Both
+   are recent, so the whole thing is behind an @supports and a browser without
+   them opens instantly - exactly as it did before.
+   --------------------------------------------------------------------------- */
+
+@supports selector(::details-content) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size var(--dur-base) var(--ease-brand),
+      content-visibility var(--dur-base) allow-discrete;
+  }
+
+  details[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* The mobile navigation panel, arriving from under the header it opened from
+   rather than being switched on. */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility panel-in {
+  animation: panel-in var(--dur-base) var(--ease-out-soft) both;
+}
+
+/* The product dialog. Two parts, deliberately different speeds: the scrim is
+   quick, because it is only there to take the page away; the panel is slower,
+   because it is the thing being read. */
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility dialog-scrim {
+  animation: scrim-in var(--dur-quick) linear both;
+}
+
+@utility dialog-panel {
+  animation: dialog-in var(--dur-base) var(--ease-out-soft) both;
+}
+
+/* The one indeterminate indicator on the site, on the enquiry submit. Linear,
+   because a spinner that eases is a spinner that looks like it is stalling. */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility spin-quick {
+  animation: spin 700ms linear infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   4. AMBIENT — the slow loops.
+
+   Long periods, tiny amplitudes. The test for every one of these is whether you
+   notice it while reading; if you do, it is too big or too fast.
+   --------------------------------------------------------------------------- */
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.07);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(5px, -7px, 0) rotate(5deg);
+  }
+}
+
+@keyframes ping-ring {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.75;
+  }
+  70% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* The odour plume in the Difference diagram. Meaning, not decoration: this is
+   the thing the whole section exists to show, and a still picture of it was
+   asking the reader to imagine the part that matters. */
+@keyframes odour-rise {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateY(-200px) scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* The neutralising band, pulsing gently at the source. */
+@keyframes band-pulse {
+  0%,
+  100% {
+    opacity: 0.24;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+/* The rising odour in the Difference diagram. `transform-box: fill-box` puts
+   the scale origin at the particle's own centre; without it an SVG transform
+   is measured from the viewBox origin and the particle flies off to the left. */
+@utility odour-plume {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: odour-rise 3.4s var(--ease-brand) infinite;
+  animation-delay: calc(var(--i, 0) * 0.55s);
+}
+
+@utility band-live {
+  animation: band-pulse 3.6s var(--ease-brand) infinite;
+}
+
+@utility float-slow {
+  animation: float-y 7s var(--ease-brand) infinite;
+}
+@utility drift-slow {
+  animation: drift 11s var(--ease-brand) infinite;
+}
+@utility breathe-slow {
+  animation: breathe 6s var(--ease-brand) infinite;
+}
+@utility ping-slow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ping-ring 2.8s var(--ease-out-soft) infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   5. THE TICKER — one continuous run of the problems the range treats.
+
+   Duplicated in the markup and translated by exactly half, so the seam never
+   arrives. Paused on hover and on focus-within, because a moving list you
+   cannot stop is a moving list you cannot read.
+   --------------------------------------------------------------------------- */
+
+@keyframes ticker {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@utility ticker-track {
+  animation: ticker var(--ticker-dur, 46s) linear infinite;
+  will-change: transform;
+}
+.ticker-stop:hover .ticker-track,
+.ticker-stop:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+/* ---------------------------------------------------------------------------
+   6. HOVER MECHANICS
+
+   Three gestures, reused everywhere, so a hover on this site always means the
+   same thing: a fill rises, a highlight passes, a rule draws itself.
+   --------------------------------------------------------------------------- */
+
+/* A fill that rises from the bottom edge instead of a flat colour swap. The
+   button isolates, so the negative-z fill paints over the button's own ground
+   and under its label. */
+@utility fill-rise {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.fill-rise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--fill, var(--color-flame-deep));
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--dur-base) var(--ease-brand);
+}
+.fill-rise:hover::before,
+.fill-rise:focus-visible::before {
+  transform: scaleY(1);
+}
+
+/* A specular pass across a product plate. Warm paper white, not neutral grey —
+   a grey highlight on a cream ground reads as haze. */
+@keyframes sheen-pass {
+  from {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(230%) skewX(-18deg);
+  }
+}
+
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+}
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: -20% -60%;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 38%,
+    color-mix(in srgb, var(--color-paper-1) 45%, transparent) 50%,
+    transparent 62%
+  );
+  transform: translateX(-130%) skewX(-18deg);
+}
+.group:hover .sheen::after,
+.group:focus-visible .sheen::after,
+.sheen:hover::after {
+  animation: sheen-pass 1s var(--ease-brand);
+}
+
+/* An underline that wipes in from the leading edge rather than switching on. */
+@utility link-wipe {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size var(--dur-base) var(--ease-brand);
+  padding-bottom: 1px;
+}
+.link-wipe:hover,
+.link-wipe:focus-visible,
+.group:hover .link-wipe,
+.group:focus-visible .link-wipe {
+  background-size: 100% 1px;
+}
+
+/* The brand ornament, drawing itself petal by petal once its Reveal has fired.
+   Deliberately NOT given a hidden resting state: a Petal used outside a Reveal
+   (the footer's, the one on the enquiry confirmation) must render normally, so
+   the animation only exists inside `[data-shown]` and its `both` fill supplies
+   the undrawn start state for the elements that do animate. */
+@keyframes petal-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes petal-core {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.js [data-shown] .petal-draw path {
+  stroke-dasharray: 1;
+  animation: petal-draw var(--dur-slow) var(--ease-brand) both;
+  animation-delay: calc(var(--rv-delay, 0ms) + 160ms + var(--i, 0) * 80ms);
+}
+.js [data-shown] .petal-draw circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: petal-core var(--dur-base) var(--ease-out-soft) both;
+  animation-delay: calc(var(--rv-delay, 0ms) + 560ms);
+}
+
+/* A hairline that draws itself along an axis once its Reveal has fired. Used
+   for the flame tick above a section label, and for the rules under headings. */
+@utility draw-x {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-long) var(--ease-out-soft)
+    calc(var(--rv-delay, 0ms) + 120ms);
+}
+[data-shown] .draw-x,
+.draw-x[data-shown] {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------------
+   7. SCROLL-DRIVEN — no JavaScript at all, where the browser supports it.
+
+   Both of these are progressive enhancement: without `animation-timeline` the
+   progress bar simply never fills and the photograph simply never drifts, and
+   nothing else about the page changes.
+   --------------------------------------------------------------------------- */
+
+@keyframes fill-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@utility scroll-progress {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+@keyframes photo-parallax {
+  from {
+    transform: translate3d(0, -3.5%, 0) scale(1.1);
+  }
+  to {
+    transform: translate3d(0, 3.5%, 0) scale(1.1);
+  }
+}
+
+@utility parallax {
+  overflow: hidden;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: fill-x linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   THE SEAM — the hand-off from one band to the next.
+
+   Where two full-width sections meet, the colour changes and that is all that
+   happens: an abrupt cut, with nothing to tell the reader that one argument
+   finished and another started. `band` puts a flame hairline on the top edge
+   and DRAWS it across as the section enters the viewport, so the boundary is
+   an event rather than a join.
+
+   It is tied to the scroll position, not to a timer, which is what makes it
+   feel like the page is responding to the reader rather than playing at them:
+   scroll back up and the rule retracts. The range is `entry 0% -> entry 90%`,
+   so it completes just before the section is fully in view.
+
+   Progressive enhancement, and the fallback is the important half: without
+   scroll-timeline support the rule is simply drawn at full width, which is a
+   perfectly good static seam. The scaleX(0) start only exists inside the
+   @supports block, so an unsupporting browser can never be left with an
+   invisible one.
+   --------------------------------------------------------------------------- */
+
+@utility band {
+  position: relative;
+  isolation: isolate;
+}
+
+.band::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  z-index: 1;
+  background: var(--color-flame);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: view()) {
+  .band::before {
+    transform: scaleX(0);
+    animation: fill-x linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 90%;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .parallax > img,
+  .parallax > picture > img {
+    animation: photo-parallax linear both;
+    animation-timeline: view(block);
+    animation-range: cover 0% cover 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   8. ROUTE TRANSITIONS
+
+   React's <ViewTransition> names the pair; this decides what the pair does. A
+   short crossfade with a small lift — enough to register that the page changed,
+   short enough that it never stands between a reader and the next page.
+   --------------------------------------------------------------------------- */
+
+::view-transition {
+  /* The overlay would otherwise swallow a click made during the transition. */
+  pointer-events: none;
+}
+
+::view-transition-old(.page),
+::view-transition-new(.page) {
+  /* Both snapshots share the box, so a taller page does not shove the shorter
+     one down mid-transition. */
+  height: 100%;
+  overflow: clip;
+}
+
+::view-transition-old(.page) {
+  animation: 140ms var(--ease-brand) both vt-fade reverse;
+}
+
+::view-transition-new(.page) {
+  animation:
+    260ms var(--ease-out-soft) 100ms both vt-fade,
+    420ms var(--ease-out-soft) both vt-lift;
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vt-lift {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* The header is the reader's fixed reference point. It must not slide with the
+   content, or the whole viewport appears to move. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* ---------------------------------------------------------------------------
+   9. REDUCED MOTION
+
+   BASE already zeroes every duration on the page. What is left to do here is
+   make sure nothing is stranded: anything whose HIDDEN state is the CSS default
+   has to be restored, and the two scroll-driven effects have to be switched off
+   by name rather than by duration, because a scroll timeline does not measure
+   its progress in milliseconds.
+
+   This must sit after everything above — same specificity, so source order is
+   what decides.
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal]:not([data-shown]),
+  .js [data-reveal="mask"]:not([data-shown]) > [data-rv-mask],
+  .js [data-stagger]:not([data-shown]) > * {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: none;
+  }
+
+  .draw-x,
+  [data-shown] .draw-x {
+    transform: none;
+  }
+
+  /* A bar that fills as you scroll is motion the reader did not ask for, and it
+     cannot be usefully frozen — so it is simply not drawn. */
+  .scroll-progress {
+    display: none;
+  }
+
+  .parallax > img,
+  .parallax > picture > img {
+    animation-name: none;
+  }
+
+  /* The seam stops drawing itself and is simply present. It is a real divider,
+     not decoration, so it stays visible rather than being hidden. */
+  .band::before {
+    animation-name: none;
+    transform: none;
+  }
+
+  /* The ticker stops being a ticker and becomes an ordinary strip the reader
+     scrolls themselves. Zeroing its duration instead would snap the track to
+     -50% and hide the first half of the list. */
+  .ticker-track {
+    animation-name: none;
+  }
+  .ticker-stop {
+    overflow-x: auto;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }
 
@@ -317,32 +1156,17 @@ main[id] {
 }
 
 /* Product plates lift slightly and their image scales — one gesture, not two
-   competing ones. */
+   competing ones. `.group:hover` is included so the lift fires from anywhere on
+   the plate's link, not only from the image itself. */
 @utility lift {
   transition:
     transform var(--dur-base) var(--ease-brand),
     box-shadow var(--dur-base) var(--ease-brand);
 }
-.lift:hover {
-  transform: translateY(-4px);
-}
-
-/* A hairline that draws itself in under a heading as it enters. */
-@keyframes draw-rule {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@utility rule-draw {
-  transform-origin: left;
-}
-.js [data-shown] > .rule-draw,
-.js .rule-draw[data-shown] {
-  animation: draw-rule var(--dur-slow) var(--ease-brand) both;
+.lift:hover,
+.group:hover .lift,
+.group:focus-visible .lift {
+  transform: translateY(-6px);
 }
 
 /* Sections that genuinely fit one screen say so explicitly. svh, not vh, so
@@ -470,17 +1294,17 @@ main[id] {
 }
 
 /* ============================================================================
-   MOTION
+   NOTE ON WRITING MOTION IN MARKUP
 
-   There is deliberately no entrance animation here. The design law for this
-   site is that motion must carry meaning - the mask/neutralise state change,
-   filtering, the sticky-nav hairline - and nothing else. A scroll-reveal on
-   every block is the reflex, not a decision, so the keyframe that used to sit
-   here was removed rather than left declared and unused.
+   The whole vocabulary lives in the MOTION section above. Sections should reach
+   for `<Reveal>`, `<Stagger>` and the utilities defined there rather than
+   inventing a one-off transition inline — that is what keeps twelve sections
+   feeling like one site rather than twelve.
 
-   Durations and easing come from the @theme tokens above, which generate the
-   `duration-quick|base|slow` and `ease-brand` utilities. NOTE: Tailwind v4 no
-   longer implicitly wraps `[--token]` in var(), so `duration-[--dur-quick]`
+   Durations and easing come from the @theme tokens, which generate the
+   `duration-quick|base|slow|long` and `ease-brand` utilities. NOTE: Tailwind v4
+   no longer implicitly wraps `[--token]` in var(), so `duration-[--dur-quick]`
    compiles to an invalid declaration and silently disables the transition.
-   Always use the generated theme utilities.
+   Always use the generated theme utilities, or the `duration-(--dur-quick)`
+   parenthesised form.
    ========================================================================== */

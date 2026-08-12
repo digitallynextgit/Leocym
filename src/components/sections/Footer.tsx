@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CTA, NAV, RETAIL, SITE } from "@/content/site";
-import { Petal, Wordmark } from "@/components/ui";
+import { Petal, Reveal, Stagger, Wordmark } from "@/components/ui";
 
 /**
  * The footer. One instance, in the root layout, shared by every page.
@@ -18,8 +18,15 @@ export function Footer() {
 
   return (
     <footer className="bg-ink-black text-paper mt-auto">
-      <div className="gutter measure-wide section-y">
-        <div className="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-12">
+      <div className="gutter measure-wide section-y-lg">
+        {/* Three groups, arriving left to right as the reader reaches the foot
+            of the page. The footer is the last thing anyone sees and it is
+            usually the deadest surface on a site; a cascade costs nothing and
+            makes the end of the page feel like an end rather than a stop. */}
+        <Stagger
+          step={110}
+          className="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-12"
+        >
           {/* ---- Identity ---- */}
           <div className="lg:col-span-5">
             <Wordmark variant="white" width={64} className="h-auto w-16" />
@@ -30,7 +37,11 @@ export function Footer() {
               Odour neutralisers and eco-friendly cleaning and hygiene products,
               from {SITE.origin.city}, {SITE.origin.country}.
             </p>
-            <Petal size={30} className="text-paper/20 mt-8" />
+            <Petal
+              draw={false}
+              size={30}
+              className="text-paper/20 drift-slow mt-8"
+            />
           </div>
 
           {/* ---- Navigation ---- */}
@@ -41,7 +52,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-colors duration-(--dur-quick)"
+                    className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-[color,transform] duration-(--dur-base) ease-brand hover:translate-x-1"
                   >
                     {item.label}
                   </Link>
@@ -50,7 +61,7 @@ export function Footer() {
               <li>
                 <Link
                   href={CTA.href}
-                  className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-colors duration-(--dur-quick)"
+                  className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-[color,transform] duration-(--dur-base) ease-brand hover:translate-x-1"
                 >
                   {CTA.label}
                 </Link>
@@ -65,7 +76,7 @@ export function Footer() {
               <li>
                 <a
                   href={`mailto:${SITE.contact.email}`}
-                  className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-colors duration-(--dur-quick)"
+                  className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-[color,transform] duration-(--dur-base) ease-brand hover:translate-x-1"
                 >
                   {SITE.contact.email}
                 </a>
@@ -75,7 +86,7 @@ export function Footer() {
                   href={SITE.contact.youtube}
                   target="_blank"
                   rel="noreferrer"
-                  className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-colors duration-(--dur-quick)"
+                  className="ui-text text-paper/80 hover:text-flame inline-block py-1.5 transition-[color,transform] duration-(--dur-base) ease-brand hover:translate-x-1"
                 >
                   YouTube
                 </a>
@@ -100,17 +111,20 @@ export function Footer() {
               {SITE.origin.city}, {SITE.origin.country}
             </p>
           </div>
-        </div>
+        </Stagger>
 
         {/* ---- Legal ---- */}
-        <div className="rule-inv-t mt-12 flex flex-col gap-3 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <Reveal
+          delay={80}
+          className="rule-inv-t mt-12 flex flex-col gap-3 pt-5 sm:flex-row sm:items-center sm:justify-between"
+        >
           <p className="spec-value text-paper/65">
             © {year} Leocym. All rights reserved.
           </p>
           <p className="spec-value text-paper/65">
             This website is for information only.
           </p>
-        </div>
+        </Reveal>
       </div>
     </footer>
   );

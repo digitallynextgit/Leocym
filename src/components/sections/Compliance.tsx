@@ -6,7 +6,7 @@ import {
 } from "@/content/compliance";
 import { CLEANING_PRODUCTS } from "@/content/products";
 import { SITE } from "@/content/site";
-import { Action, Petal, Reveal, SpecRow } from "@/components/ui";
+import { Action, Petal, Reveal, SpecRow, Stagger } from "@/components/ui";
 
 /**
  * CERTIFICATIONS & SAFETY INFORMATION — sitemap Part C, item 5.
@@ -63,7 +63,13 @@ function Block({
     <Reveal>
       <div className="rule-t grid gap-x-14 gap-y-6 pt-8 lg:grid-cols-12">
         <div className="lg:col-span-3">
-          <p className="plate-no text-flame-deep">{index}</p>
+          <p className="plate-no text-flame-deep flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="draw-x bg-flame h-0.5 w-6 shrink-0"
+            />
+            {index}
+          </p>
           <h2 className="display-2 mt-3">{title}</h2>
         </div>
         <div className="lg:col-span-9">
@@ -88,7 +94,10 @@ function Notes({
   columns?: 1 | 2;
 }) {
   return (
-    <dl
+    <Stagger
+      as="dl"
+      step={60}
+      delay={80}
       className={`mt-6 grid grid-cols-1 gap-x-12 ${
         columns === 2 ? "sm:grid-cols-2" : ""
       }`}
@@ -99,7 +108,7 @@ function Notes({
           <dd className="prose-body text-ink-deep/70 mt-1.5">{item.body}</dd>
         </div>
       ))}
-    </dl>
+    </Stagger>
   );
 }
 

@@ -1,6 +1,6 @@
 import { CTA, RETAIL, SITE } from "@/content/site";
 import { CLEANING_PRODUCTS, ODOUR_PRODUCTS } from "@/content/products";
-import { Petal, Reveal, TextLink } from "@/components/ui";
+import { Petal, Reveal, Stagger, TextLink } from "@/components/ui";
 
 /**
  * WHERE TO BUY — sitemap Part C, item 6.
@@ -47,7 +47,7 @@ export function WhereToBuy() {
               href={RETAIL.url}
               target="_blank"
               rel="noreferrer"
-              className="group rule-all hover:border-ink hover:bg-paper-2 mt-7 flex flex-col gap-4 rounded-sm p-6 transition-colors duration-(--dur-base) sm:flex-row sm:items-center sm:justify-between sm:p-8"
+              className="group rule-all hover:border-ink hover:bg-paper-2 mt-7 flex flex-col gap-4 rounded-sm p-6 transition-[color,background-color,border-color,transform,box-shadow] duration-(--dur-base) ease-brand hover:-translate-y-1 hover:shadow-[0_16px_36px_-18px_var(--color-ink)] sm:flex-row sm:items-center sm:justify-between sm:p-8"
             >
               <span>
                 <span className="spec-label text-ink-soft">{RETAIL.role}</span>
@@ -58,14 +58,14 @@ export function WhereToBuy() {
                   {RETAIL.url.replace(/^https?:\/\//, "")}
                 </span>
               </span>
-              <span className="ui-text bg-flame text-ink group-hover:bg-flame-deep group-hover:text-paper inline-flex shrink-0 items-center gap-2.5 px-6 py-3 transition-colors duration-(--dur-quick)">
+              <span className="ui-text bg-flame text-ink group-hover:bg-flame-deep group-hover:text-paper sheen inline-flex shrink-0 items-center gap-2.5 px-6 py-3 transition-colors duration-(--dur-base)">
                 Visit the shop
                 <svg
                   width="14"
                   height="14"
                   viewBox="0 0 14 14"
                   aria-hidden="true"
-                  className="shrink-0"
+                  className="shrink-0 transition-transform duration-(--dur-base) ease-brand group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 >
                   <path
                     d="M4 10 10 4M5 4h5v5"
@@ -95,7 +95,11 @@ export function WhereToBuy() {
           </div>
 
           <div className="lg:col-span-9">
-            <dl className="grid grid-cols-1 gap-x-12 sm:grid-cols-2">
+            <Stagger
+              as="dl"
+              step={80}
+              className="grid grid-cols-1 gap-x-12 sm:grid-cols-2"
+            >
               <div className="rule-t py-4">
                 <dt className="display-3">For your home</dt>
                 <dd className="prose-body text-ink-deep/70 mt-1.5">
@@ -128,7 +132,7 @@ export function WhereToBuy() {
                   person you can call afterwards all stay in one place.
                 </dd>
               </div>
-            </dl>
+            </Stagger>
           </div>
         </div>
       </Reveal>
